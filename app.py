@@ -140,3 +140,81 @@ def created():
             </body>
         </html>
         ''', 201
+
+@app.errorhandler(400)
+def bad_request_error(error):
+    return '''
+    <!doctype html>
+    <html>
+        <head><title>400 Bad Request</title></head>
+        <body>
+            <h1>400 Bad Request</h1>
+            <p>Некорректный запрос.</p>
+        </body>
+    </html>
+    ''', 400
+
+@app.errorhandler(401)
+def unauthorized_error(error):
+    return '''
+    <!doctype html>
+    <html>
+        <head><title>401 Unauthorized</title></head>
+        <body>
+            <h1>401 Unauthorized</h1>
+            <p>Требуется авторизация.</p>
+        </body>
+    </html>
+    ''', 401
+
+@app.errorhandler(402)
+def payment_required_error(error):
+    return '''
+    <!doctype html>
+    <html>
+        <head><title>402 Payment Required</title></head>
+        <body>
+            <h1>402 Payment Required</h1>
+            <p>Требуется оплата.</p>
+        </body>
+    </html>
+    ''', 402
+
+@app.errorhandler(403)
+def forbidden_error(error):
+    return '''
+    <!doctype html>
+    <html>
+        <head><title>403 Forbidden</title></head>
+        <body>
+            <h1>403 Forbidden</h1>
+            <p>Доступ запрещен.</p>
+        </body>
+    </html>
+    ''', 403
+
+@app.errorhandler(405)
+def method_not_allowed_error(error):
+    return '''
+    <!doctype html>
+    <html>
+        <head><title>405 Method Not Allowed</title></head>
+        <body>
+            <h1>405 Method Not Allowed</h1>
+            <p>Метод не разрешен.</p>
+        </body>
+    </html>
+    ''', 405
+
+@app.errorhandler(418)
+def teapot_error(error):
+    return '''
+    <!doctype html>
+    <html>
+        <head><title>418 I'm a teapot</title></head>
+        <body>
+            <h1>418 I'm a teapot</h1>
+            <p>Я чайник. Не могу заварить кофе.</p>
+        </body>
+    </html>
+    ''', 418 

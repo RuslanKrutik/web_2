@@ -17,10 +17,22 @@ def lab1():
                 сознательно предоставляющих лишь самые базовые возможности.
             </p>
             <a href="/">Назад на главную</a>
+            <h2>Список роутов</h2>
+            <ul>
+                <li><a href="/lab1">Лабораторная 1</a></li>
+                <li><a href="/lab1/counter">Счётчик</a></li>
+                <li><a href="/lab1/reset_counter">Очистить счётчик</a></li>
+                <li><a href="/lab1/oak">Дуб</a></li>
+                <li><a href="/lab1/error">Ошибка</a></li>
+                <li><a href="/lab1/custom">Пользовательская страница</a></li>
+                <li><a href="/lab1/web">На чем написан сервер</a></li>
+                <li><a href="/lab1/author">Автор</a></li>
+                <li><a href="/lab1/created">201</a></li>
+            </ul>
+            </ul>
         </body>
     </html>
     '''
-
 @app.route("/")
 @app.route("/index")
 def index():

@@ -217,4 +217,25 @@ def teapot_error(error):
             <p>Я чайник. Не могу заварить кофе.</p>
         </body>
     </html>
-    ''', 418 
+    ''', 418
+    
+@app.errorhandler(404)
+def not_found_error(error):
+    css_path = url_for("static", filename="error.css")
+    img_path = url_for("static", filename="404.jpeg")
+    return f'''
+    <!doctype html>
+    <html>
+        <head>
+            <title>404 Страница не найдена</title>
+            <link rel="stylesheet" type="text/css" href="{css_path}">
+        </head>
+        <body>
+            <h1>404 Ошибка</h1>
+            <p>Упс! Кажется, вы заблудились.</p>
+            <img src="{img_path}" alt="404">
+            <p>К сожалению, страница, которую вы ищете, не найдена.</p>
+            <a href="/">Вернуться на главную</a>
+        </body>
+    </html>
+    ''', 404

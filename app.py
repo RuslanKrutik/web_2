@@ -6,35 +6,38 @@ def not_found(err):
     return "нет какой страницы", 404
 
 @app.route("/")
-@app.route("/web")
+@app.route("/lab1/web")
 def web():
     return """<!doctype html>
-        <html>
-            <body>
-                <h1>web-сервер на flask</h1>
-                <a href="/author">author</a>
-                
-            </body>
-        </html>""",200, {
-            'X-Server': 'sample',
-            'Content-Type': 'text/plain; charset=utf-8'
-        }
-        
-@app.route("/author")
+    <html>
+        <body>
+            <h1>web-сервер на flask</h1>
+            <a href="/lab1/author">author</a>
+        </body>
+    </html>""", 200, {
+        'X-Server': 'sample',
+        'Content-Type': 'text/plain; charset=utf-8'
+    }
+
+@app.route("/lab1/author")
 def author():
     name = "Крутиков Руслан Олегович"
     group = "ФБИ-21"
     faculty = "ФБ"
     
-    return """<!doctype html>
-        <html>
-            <body>
-                <p>Студент: """ + name + """</p>
-                <p>Группа: """ + group + """</p>
-                <p>Факультет: """ + faculty + """</p>
-                <a href="/web">web</a>
-            </body>
-        </html>"""
+    return f"""<!doctype html>
+    <html>
+        <body>
+            <p>Студент: {name}</p>
+            <p>Группа: {group}</p>
+            <p>Факультет: {faculty}</p>
+            <a href="/lab1/web">web</a>
+        </body>
+    </html>"""
+
+@app.route("/lab1/info")
+def info():
+    return redirect("/lab1/author")
         
 @app.route("/lab1/oak")
 def oak():

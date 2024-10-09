@@ -1,5 +1,10 @@
 from flask import Flask, url_for, redirect
 app = Flask(__name__)
+
+app.errorhandler(404)
+def not_found(err):
+    return "нет какой страницы", 404
+
 @app.route("/")
 @app.route("/web")
 def web():
@@ -34,13 +39,19 @@ def author():
 @app.route("/lab1/oak")
 def oak():
     path = url_for("static", filename="oak.jpg")
-    return  '''<!doctype html>
-        <html>
-            <body>
-                <h1>Дуб</h1>
-                <img src="''' + path + '''">
-            </body>
-        </html>'''
+    css_path = url_for("static", filename="lab1.css")
+    return f'''
+    <!doctype html>
+    <html>
+        <head>
+            <link rel="stylesheet" type="text/css" href="{css_path}">
+        </head>
+        <body>
+            <h1>Дуб</h1>
+            <img src="{path}">
+        </body>
+    </html>
+    '''
 
 count = 0            
 @app.route('/lab1/counter')
@@ -70,8 +81,3 @@ def created():
             </body>
         </html>
         ''', 201
-app = Flask(__name__)
-
-app.errorhandler(404)
-def not_found(err):
-    return "нет какой страницы", 404

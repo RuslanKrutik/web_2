@@ -6,6 +6,32 @@ def not_found(err):
     return "нет какой страницы", 404
 
 @app.route("/")
+@app.route("/index")
+def index():
+    return '''
+    <!doctype html>
+    <html>
+        <head>
+            <title>НГТУ, ФБ, Лабораторные работы</title>
+        </head>
+        <body>
+            <header>
+                <h1>НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных</h1>
+            </header>
+            <nav>
+                <ul>
+                    <li><a href="/lab1">Первая лабораторная</a></li>
+                </ul>
+            </nav>
+            <footer>
+                <p>ФИО: Крутиков Руслан Олегович</p>
+                <p>Группа: ФБИ-21</p>
+                <p>Курс: 2</p>
+                <p>Год: 2024</p>
+            </footer>
+        </body>
+    </html>
+    '''
 @app.route("/lab1/web")
 def web():
     return """<!doctype html>

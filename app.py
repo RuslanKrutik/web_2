@@ -1,5 +1,12 @@
 from flask import Flask, url_for, redirect
+from werkzeug.exceptions import HTTPException
+
 app = Flask(__name__)
+
+class PaymentRequired(HTTPException):
+    code = 402
+    description = "Требуется оплата."
+
 
 @app.route("/lab1")
 def lab1():
@@ -54,7 +61,7 @@ def index():
             <footer>
                 <p>ФИО: Крутиков Руслан Олегович</p>
                 <p>Группа: ФБИ-21</p>
-                <p>Курс: 2</p>
+                <p>Курс: 3</p>
                 <p>Год: 2024</p>
             </footer>
         </body>
@@ -175,7 +182,7 @@ def unauthorized_error(error):
     </html>
     ''', 401
 
-@app.errorhandler(402)
+@app.errorhandler(PaymentRequired)
 def payment_required_error(error):
     return '''
     <!doctype html>

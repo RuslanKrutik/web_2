@@ -1,10 +1,6 @@
 from flask import Flask, url_for, redirect
 app = Flask(__name__)
 
-app.errorhandler(404)
-def not_found(err):
-    return "нет какой страницы", 404
-
 @app.route("/lab1")
 def lab1():
     return '''

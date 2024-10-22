@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width, initial-scale=1.0">
-    <title>{% if name %}{{name}},{% else %} Анонимус,. Лабораторная работа {{n_lab}}</title>
+    <title>{% if name %}{{name}},{% else %} Анонимус {% endif %},. Лабораторная работа {{n_lab}}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css')}}">
 </head>
     <header>
@@ -16,7 +16,12 @@
         3258-759 = {{325-759}}<br>
         8452/793 = {{8452/793}}<br>
         45<sup>8</sup> = {{45**8}}<br>
-    <main>
+        <ul>
+            {% for f in fruits %}
+            <li>{{ loop.index }} - {{ f.name }}: {{ f.price }} &#x20bd</li>
+            {% endfor %}
+        </ul>
+    </main>
 
     <footer>
 
@@ -25,14 +30,17 @@
             {{name}},
         {% else %}
             Анонимус,
+        {% endif %}
         {% if n_group %}
         ФБИ-{{n_group}},
         {% else %}
         Группа неизвестна,
+        {% endif %}
         {% if n_kurs %}
-        {{n_kurs}} курс, 2024
+        {{n_kurs}} курс, 2024,
         {% else %}
         курс неизвестен,
+        {% endif %}
     <footer>
 </body>
 </html>

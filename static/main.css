@@ -1,0 +1,91 @@
+body {
+    background-color: lightblue;
+    color: maroon;
+    font-family: Arial;
+    margin: 0px;
+    width: 100%;
+    height: 100vh;
+    background-size: 300% 300%;
+    background-image: linear-gradient(-45deg, rgb(0, 89, 255) 0%, rgb(0, 26, 255) 25%, rgb(82, 235, 214) 51%, #182ef1 100%);
+}
+
+main {
+    background-image: linear-gradient(-45deg, rgb(178, 183, 221) 0%, rgb(140, 247, 229) 25%, rgb(29, 235, 190) 51%, #87e28f 100%);
+    background-color: rgba(136, 226, 226, 0.801);
+    color: rgb(37, 30, 21);
+    font-family: Arial;
+    margin: 10px 20px 45px;
+}
+footer {
+    background-color: darkcyan;
+    color: rgba(223, 219, 219, 0.815);
+    font-family: Arial;
+    margin: 0px;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+
+header {
+    background-color: darkcyan;
+    color:  rgba(223, 219, 219, 0.815);
+    font-family: Arial;
+    margin: 0px;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+    transition: 0.5s;
+}
+a:link {
+    color: rgb(48, 18, 18);
+    text-decoration: underline;
+}
+
+a:visited {
+    color: rgb(0, 89, 255);
+}
+
+a:hover {
+    color: gold;
+    text-decoration: underline;
+    transition: 0.1s;
+}
+
+a:active {
+    color: black;
+    opacity: 0.1;
+}
+
+div.menu {
+    border: 7px solid darkcyan;
+    border-radius: 5px;
+    width: 300px;
+    margin: 0 auto;
+}
+
+div.menu:hover {
+    background-color: rgb(179, 255, 0);
+    box-shadow: 0 0 15px rgb(37, 36, 36);
+}
+div.line_a {
+    line-height: 20px;
+    text-align: center;
+    background-color: rgb(15, 200, 233);
+    margin: 2px;
+    width: 220px;
+    display: block;
+
+}
+div.line_a:hover {
+    background-color: rgb(32, 32, 252);
+}
+h1 {
+    display: block;
+    border:3px solid;
+    color: rgba(0, 0, 0, 0.534);
+    box-shadow: 5ch red;
+    background-color: rgb(0, 255, 157);
+}

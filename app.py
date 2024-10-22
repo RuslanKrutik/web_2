@@ -415,3 +415,22 @@ def calc_default():
 @app.route('/lab2/calc/<int:a>')
 def calc_with_one(a):
     return redirect(f'/lab2/calc/{a}/1')
+
+# Список книг на стороне сервера с добавлением американских авторов
+books = [
+    {"author": "Антон Чехов", "title": "Чайка", "genre": "Пьеса", "pages": 128},
+    {"author": "Михаил Булгаков", "title": "Мастер и Маргарита", "genre": "Фантастика", "pages": 480},
+    {"author": "Марк Твен", "title": "Приключения Тома Сойера", "genre": "Приключения", "pages": 240},
+    {"author": "Эрнест Хемингуэй", "title": "Старик и море", "genre": "Новелла", "pages": 132},
+    {"author": "Фрэнсис Скотт Фицджеральд", "title": "Великий Гэтсби", "genre": "Роман", "pages": 180},
+    {"author": "Джек Лондон", "title": "Зов предков", "genre": "Приключения", "pages": 232},
+    {"author": "Джон Стейнбек", "title": "Гроздья гнева", "genre": "Роман", "pages": 464},
+    {"author": "Лев Толстой", "title": "Война и мир", "genre": "Роман", "pages": 1225},
+    {"author": "Федор Достоевский", "title": "Преступление и наказание", "genre": "Роман", "pages": 671},
+    {"author": "Александр Пушкин", "title": "Евгений Онегин", "genre": "Роман в стихах", "pages": 389}
+    
+]
+# Обработчик для отображения списка книг
+@app.route('/lab2/books')
+def show_books():
+    return render_template("books.html", books=books)

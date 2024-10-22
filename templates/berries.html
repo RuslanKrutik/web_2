@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Список ягод{% endblock %}
+
+{% block main %}
+<h2>Ягоды</h2>
+<div class="berries-list">
+    {% for berry in berries %}
+    <div class="berry">
+        <h3>{{ berry.name }}</h3>
+        <img src="{{ url_for('static', filename=berry.image) }}" alt="{{ berry.name }}" width="200">
+        <p>{{ berry.description }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -434,3 +434,17 @@ books = [
 @app.route('/lab2/books')
 def show_books():
     return render_template("books.html", books=books)
+
+# Список ягод с описанием и ссылками на изображения
+# Список ягод с описанием и ссылками на изображения
+berries = [
+    {"name": "Клубника", "image": "images/strawberry.jpg", "description": "Сладкая красная ягода, любимая многими."},
+    {"name": "Голубика", "image": "images/blueberry.webp", "description": "Маленькая синяя ягода с богатым вкусом."},
+    {"name": "Малина", "image": "images/raspberry.jpg", "description": "Сочная и ароматная красная ягода."},
+    {"name": "Черника", "image": "images/blackberry.jpg", "description": "Сладкая и полезная темно-синяя ягода."},
+    {"name": "Клюква", "image": "images/cranberry.jpg", "description": "Кислая красная ягода, часто используется в напитках."}
+]
+
+@app.route('/lab2/berries')
+def show_berries():
+    return render_template("berries.html", berries=berries)

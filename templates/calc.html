@@ -1,0 +1,15 @@
+
+{% extends "base.html" %}
+
+{% block title %}Калькулятор{% endblock %}
+
+{% block main %}
+    <h2>Расчёт с параметрами:</h2>
+    <ul>
+        <li>{{ a }} + {{ b }} = {{ a + b }}</li>
+        <li>{{ a }} - {{ b }} = {{ a - b }}</li>
+        <li>{{ a }} x {{ b }} = {{ a * b }}</li>
+        <li>{{ a }} / {{ b }} = {{ a / b if b != 0 else "∞ (деление на ноль)" }}</li>
+        <li>{{ a }}<sup>{{ b }}</sup> = {{ a ** b }}</li>
+    </ul>
+{% endblock %}

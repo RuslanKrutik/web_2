@@ -336,4 +336,8 @@ def add_flower(name):
 '''
 @app.route('/lab2/example')
 def example():
-    return render_template('example.html')
+    name = 'Крутиков Руслан'
+    n_group = "21"
+    n_kurs = "3"
+    n_lab = "2"
+    return render_template('example.html', name=name, n_group=n_group, n_kurs=n_kurs, n_lab=n_lab)

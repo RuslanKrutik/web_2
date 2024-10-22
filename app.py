@@ -1,4 +1,4 @@
-from flask import Flask, url_for, redirect
+from flask import Flask, url_for, redirect, abort
 from werkzeug.exceptions import HTTPException
 
 app = Flask(__name__)
@@ -233,7 +233,7 @@ def teapot_error(error):
         </body>
     </html>
     ''', 418
-    
+
 @app.errorhandler(404)
 def not_found_error(error):
     css_path = url_for("static", filename="error.css")
@@ -299,3 +299,15 @@ def custom_route():
         'Header_228': 'CustomValue1',
         'X_X': 'Flask'
     }
+@app.route("/lab1/error400")
+def error400():
+    return abort(400)
+
+@app.route("/lab2/a")
+def a():
+    return 'без сэша'
+
+@app.route('/lab2/a/')
+def a2():
+    return 'со слэшем'
+

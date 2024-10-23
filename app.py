@@ -43,30 +43,8 @@ def lab1():
 @app.route("/")
 @app.route("/index")
 def index():
-    return '''
-    <!doctype html>
-    <html>
-        <head>
-            <title>НГТУ, ФБ, Лабораторные работы</title>
-        </head>
-        <body>
-            <header>
-                <h1>НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных</h1>
-            </header>
-            <nav>
-                <ul>
-                    <li><a href="/lab1">Первая лабораторная</a></li>
-                </ul>
-            </nav>
-            <footer>
-                <p>ФИО: Крутиков Руслан Олегович</p>
-                <p>Группа: ФБИ-21</p>
-                <p>Курс: 3</p>
-                <p>Год: 2024</p>
-            </footer>
-        </body>
-    </html>
-    '''
+    return render_template('menu.html')
+
 @app.route("/lab1/web")
 def web():
     return """<!doctype html>
@@ -399,7 +377,7 @@ def lab2():
 @app.route('/lab2/filters')
 def filters():
     phrase = "О <b>сколько</b> <u>нам</u> <i>открытий</i> чудных..."
-    return render_template('filter.html', phrase = phrase)
+    return render_template('filters.html', phrase = phrase)
 
 # Маршрут для обработки двух чисел и выполнения операций
 @app.route('/lab2/calc/<int:a>/<int:b>')

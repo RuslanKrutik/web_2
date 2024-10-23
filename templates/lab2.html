@@ -6,10 +6,14 @@
 {# основной контент #}
 {% block main %}
     <h1>Шаблоны</h1>
-    <div> Тема лабораторной работы - шаблоны. Список сделанных страниц:</div>
-    <ol>
-        <li>
-            <a href="/lab2/example">example</a>
-        </li>
-    </ol>
+    <div class="menu">
+        <ul>
+            <div class="line_a"><a href="/lab2/example">example</a></div>
+            <div class="line_a"><a href="/lab2/flowers">flowers</a></div>
+            <div class="line_a"><a href="/lab2/filters">filters</a></div>
+            <div class="line_a"><a href="/lab2/calc">Калькулятор</a></div>
+            <div class="line_a"><a href="/lab2/books">Книги</a></div>
+            <div class="line_a"><a href="/lab2/berries">berries</a></div>
+        </ul>
+    </div>
 {% endblock %}

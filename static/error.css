@@ -1,0 +1,23 @@
+/* error.css */
+body {
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+    color: #333;
+    text-align: center;
+    padding: 50px;
+}
+
+h1 {
+    font-size: 50px;
+    color: #ff6f61;
+}
+
+p {
+    font-size: 20px;
+    margin-bottom: 30px;
+}
+
+img {
+    width: 300px;
+    height: auto;
+}

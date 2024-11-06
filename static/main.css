@@ -90,3 +90,10 @@ h1 {
     background-color: rgb(0, 255, 157);
     text-align: center;
 }
+span.error {
+    margin-right: 5px;
+    vertical-align: middle;
+    color: #D8000C;
+    font-weight: bold;
+    font-size: 14px;
+}

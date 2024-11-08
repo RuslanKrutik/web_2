@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{# номер лабораторной #}
+{% block lab %}Лабораторная работа 3{% endblock %}
+
+{# основной контент #}
+{% block main %}
+    <h1>Успешно</h1>
+
+    <div style="margin-bottom: 20px;">
+        Спасибо, ваш заказ оплачен на сумму {{ price }} рублей, ожидайте доставку!
+    </div>
+
+    <form>
+        <div>
+            <a href="/lab3/orders" style="padding: 10px 20px; background-color: #5cb85c; color: white; border-radius: 5px; text-decoration: none;">Вернуться на главную</a>
+        </div>
+    </form>
+{% endblock %}

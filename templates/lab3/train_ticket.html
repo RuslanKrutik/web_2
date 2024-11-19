@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block main %}
+    <h1>Ваш железнодорожный билет</h1>
+    <div>
+        <p><strong>ФИО пассажира:</strong> {{ ticket.fullname }}</p>
+        <p><strong>Возраст:</strong> {{ ticket.age }} ({{ ticket.type }})</p>
+        <p><strong>Пункт выезда:</strong> {{ ticket.departure }}</p>
+        <p><strong>Пункт назначения:</strong> {{ ticket.destination }}</p>
+        <p><strong>Дата поездки:</strong> {{ ticket.trip_date }}</p>
+        <p><strong>Полка:</strong> {{ ticket.berth }}</p>
+        <p><strong>С бельём:</strong> {{ 'Да' if ticket.linen else 'Нет' }}</p>
+        <p><strong>С багажом:</strong> {{ 'Да' if ticket.baggage else 'Нет' }}</p>
+        <p><strong>Нужна страховка:</strong> {{ 'Да' if ticket.insurance else 'Нет' }}</p>
+        <p><strong>Стоимость:</strong> {{ ticket.price }} руб.</p>
+    </div>
+    <a href="/lab3/train_ticket">Вернуться к оформлению</a>
+{% endblock %}

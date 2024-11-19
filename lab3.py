@@ -75,3 +75,58 @@ def settings():
     color = request.args.get('color')
     resp = make_response(render_template('lab3/settings.html', color=color))
     return resp
+
+
+@lab3.route('/lab3/train_ticket', methods=['GET', 'POST'])
+def train_ticket():
+    if request.method == 'GET':
+        return render_template('lab3/train_ticket_form.html')
+
+    # Обработка данных формы
+    fullname = request.form.get('fullname')
+    berth = request.form.get('berth')
+    linen = request.form.get('linen') == 'on'
+    baggage = request.form.get('baggage') == 'on'
+    age = int(request.form.get('age'))
+    departure = request.form.get('departure')
+    destination = request.form.get('destination')
+    trip_date = request.form.get('trip_date')
+    insurance = request.form.get('insurance') == 'on'
+
+    # Валидация данных
+    errors = []
+    if not fullname or not departure or not destination or not trip_date:
+        errors.append("Все поля должны быть заполнены.")
+    if not (1 <= age <= 120):
+        errors.append("Возраст должен быть от 1 до 120 лет.")
+    
+    if errors:
+        return render_template('lab3/train_ticket_form.html', errors=errors)
+
+    # Расчет стоимости
+    base_price = 700 if age < 18 else 1000
+    if berth in ["нижняя", "нижняя боковая"]:
+        base_price += 100
+    if linen:
+        base_price += 75
+    if baggage:
+        base_price += 250
+    if insurance:
+        base_price += 150
+
+    # Формирование билета
+    ticket_info = {
+        "fullname": fullname,
+        "age": age,
+        "type": "Детский билет" if age < 18 else "Взрослый билет",
+        "departure": departure,
+        "destination": destination,
+        "trip_date": trip_date,
+        "berth": berth,
+        "linen": linen,
+        "baggage": baggage,
+        "insurance": insurance,
+        "price": base_price
+    }
+
+    return render_template('lab3/train_ticket_result.html', ticket=ticket_info)

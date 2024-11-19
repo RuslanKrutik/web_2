@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block main %}
+    <h1>Форма железнодорожного билета</h1>
+    <form method="post" action="/lab3/train_ticket">
+        <label>ФИО пассажира: <input type="text" name="fullname" required></label><br>
+        <label>Полка:
+            <select name="berth" required>
+                <option value="нижняя">Нижняя</option>
+                <option value="верхняя">Верхняя</option>
+                <option value="нижняя боковая">Нижняя боковая</option>
+                <option value="верхняя боковая">Верхняя боковая</option>
+            </select>
+        </label><br>
+        <label>С бельём: <input type="checkbox" name="linen"></label><br>
+        <label>С багажом: <input type="checkbox" name="baggage"></label><br>
+        <label>Возраст: <input type="number" name="age" min="1" max="120" required></label><br>
+        <label>Пункт выезда: <input type="text" name="departure" required></label><br>
+        <label>Пункт назначения: <input type="text" name="destination" required></label><br>
+        <label>Дата поездки: <input type="date" name="trip_date" required></label><br>
+        <label>Нужна страховка: <input type="checkbox" name="insurance"></label><br>
+        <button type="submit">Оформить билет</button>
+    </form>
+{% endblock %}

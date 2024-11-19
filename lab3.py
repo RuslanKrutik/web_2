@@ -140,3 +140,41 @@ def train_ticket():
     }
 
     return render_template('lab3/train_ticket_result.html', ticket=ticket_info)
+
+cars = [
+    {"name": "BMW 1 Series", "price": 2000000, "color": "White", "engine": "1.5L"},
+    {"name": "BMW 2 Series", "price": 2500000, "color": "Black", "engine": "2.0L"},
+    {"name": "BMW 3 Series", "price": 3000000, "color": "Blue", "engine": "2.0L"},
+    {"name": "BMW 4 Series", "price": 3500000, "color": "Red", "engine": "2.0L"},
+    {"name": "BMW 5 Series", "price": 4000000, "color": "Silver", "engine": "3.0L"},
+    {"name": "BMW 6 Series", "price": 4500000, "color": "White", "engine": "3.0L"},
+    {"name": "BMW 7 Series", "price": 5000000, "color": "Black", "engine": "3.5L"},
+    {"name": "BMW X1", "price": 2600000, "color": "Blue", "engine": "2.0L"},
+    {"name": "BMW X2", "price": 3100000, "color": "Red", "engine": "2.0L"},
+    {"name": "BMW X3", "price": 3600000, "color": "Silver", "engine": "3.0L"},
+    {"name": "BMW X4", "price": 4100000, "color": "White", "engine": "3.0L"},
+    {"name": "BMW X5", "price": 4600000, "color": "Black", "engine": "3.5L"},
+    {"name": "BMW X6", "price": 5100000, "color": "Blue", "engine": "3.5L"},
+    {"name": "BMW X7", "price": 5600000, "color": "Silver", "engine": "4.0L"},
+    {"name": "BMW Z4", "price": 3800000, "color": "Red", "engine": "3.0L"},
+    {"name": "BMW M3", "price": 6000000, "color": "Black", "engine": "4.0L"},
+    {"name": "BMW M4", "price": 6500000, "color": "Blue", "engine": "4.0L"},
+    {"name": "BMW M5", "price": 7000000, "color": "Silver", "engine": "4.4L"},
+    {"name": "BMW i3", "price": 2800000, "color": "White", "engine": "Electric"},
+    {"name": "BMW i8", "price": 12000000, "color": "Black", "engine": "Hybrid"},
+]
+
+# Главная страница с формой для фильтрации
+@lab3.route('/lab3/cars', methods=['GET', 'POST'])
+def cars_filter():
+    min_price = request.args.get('min_price', type=int)
+    max_price = request.args.get('max_price', type=int)
+    
+    # Фильтрация автомобилей по цене
+    filtered_cars = []
+    if min_price is not None and max_price is not None:
+        filtered_cars = [
+            car for car in cars if min_price <= car["price"] <= max_price
+        ]
+
+    return render_template('lab3/cars.html', cars=filtered_cars, min_price=min_price, max_price=max_price)

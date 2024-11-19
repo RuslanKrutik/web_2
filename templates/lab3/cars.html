@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block lab %}Фильтрация автомобилей BMW{% endblock %}
+
+{% block main %}
+    <h1>Список автомобилей BMW</h1>
+
+    <form method="get" action="/lab3/cars">
+        <div>
+            <label for="min_price">Мин. цена:</label>
+            <input type="number" id="min_price" name="min_price" value="{{ min_price or '' }}" required>
+        </div>
+        <div>
+            <label for="max_price">Макс. цена:</label>
+            <input type="number" id="max_price" name="max_price" value="{{ max_price or '' }}" required>
+        </div>
+        <div>
+            <button type="submit">Искать</button>
+        </div>
+    </form>
+
+    {% if cars %}
+        <h2>Результаты поиска:</h2>
+        <ul>
+            {% for car in cars %}
+                <li>
+                    <strong>{{ car.name }}</strong><br>
+                    Цена: {{ car.price }} руб.<br>
+                    Цвет: {{ car.color }}<br>
+                    Двигатель: {{ car.engine }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% elif min_price is not none and max_price is not none %}
+        <p>Не найдено автомобилей в заданном диапазоне цен.</p>
+    {% endif %}
+{% endblock %}

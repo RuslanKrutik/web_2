@@ -86,23 +86,23 @@ def example():
         {'name': 'мандарины', 'price': 95},
         {'name': 'манго', 'price': 321}
     ]
-    return render_template('example.html',
+    return render_template('lab2/example.html',
                         name=name, n_group=n_group, 
                         n_kurs=n_kurs, n_lab=n_lab,
                         fruits=fruits)
 @lab2.route('/lab2/')
 def lab():
-    return render_template('lab2.html'), {'Accept-Language': 'ru-RU'}
+    return render_template('lab2/lab2.html'), {'Accept-Language': 'ru-RU'}
 
 @lab2.route('/lab2/filters')
 def filters():
     phrase = "О <b>сколько</b> <u>нам</u> <i>открытий</i> чудных..."
-    return render_template('filters.html', phrase = phrase)
+    return render_template('lab2/filters.html', phrase = phrase)
 
 # Маршрут для обработки двух чисел и выполнения операций
 @lab2.route('/lab2/calc/<int:a>/<int:b>')
 def calc(a, b):
-    return render_template("calc.html", a=a, b=b)
+    return render_template("lab2/calc.html", a=a, b=b)
 
 # Маршрут для перенаправления на значения по умолчанию (1, 1)
 @lab2.route('/lab2/calc/')
@@ -131,7 +131,7 @@ books = [
 # Обработчик для отображения списка книг
 @lab2.route('/lab2/books')
 def show_books():
-    return render_template("books.html", books=books)
+    return render_template("lab2/books.html", books=books)
 
 # Список ягод с описанием и ссылками на изображения
 # Список ягод с описанием и ссылками на изображения
@@ -145,4 +145,4 @@ berries = [
 
 @lab2.route('/lab2/berries')
 def show_berries():
-    return render_template("berries.html", berries=berries)
+    return render_template("lab2/berries.html", berries=berries)

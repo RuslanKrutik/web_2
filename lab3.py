@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, request, make_response
+from flask import Blueprint, redirect, render_template, request, make_response, url_for
 lab3 = Blueprint('lab3', __name__)
 
 
@@ -64,16 +64,26 @@ def pay():
 def success_pay():
     return render_template('lab3/success_pay.html')
 
-@lab3.route('/lab3/settings')
+
+@lab3.route('/lab3/settings', methods=['GET'])
 def settings():
     color = request.args.get('color')
     if color:
-        resp = make_response(redirect('lab3/settings'))
+        # Устанавливаем cookie для цвета
+        resp = make_response(redirect(url_for('lab3.settings')))
         resp.set_cookie('color', color)
         return resp
 
-    color = request.args.get('color')
-    resp = make_response(render_template('lab3/settings.html', color=color))
+    # Получаем значение цвета из cookies
+    color = request.cookies.get('color')
+    return render_template('lab3/settings.html', color=color)
+
+@lab3.route('/lab3/clear_cookies', methods=['GET'])
+def clear_cookies():
+    # Очищаем все cookies
+    resp = make_response(redirect(url_for('lab3.settings')))
+    for cookie in request.cookies:
+        resp.delete_cookie(cookie)
     return resp
 
 
@@ -99,7 +109,7 @@ def train_ticket():
         errors.append("Все поля должны быть заполнены.")
     if not (1 <= age <= 120):
         errors.append("Возраст должен быть от 1 до 120 лет.")
-    
+
     if errors:
         return render_template('lab3/train_ticket_form.html', errors=errors)
 
@@ -113,7 +123,7 @@ def train_ticket():
         base_price += 250
     if insurance:
         base_price += 150
-
+    
     # Формирование билета
     ticket_info = {
         "fullname": fullname,

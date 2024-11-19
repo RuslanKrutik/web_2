@@ -5,15 +5,23 @@
 
 {# основной контент #}
 {% block main %}
-    <h1>Cookies</h1>
+    <h1 id="text" style="color: {{ color or 'black' }}">Cookies</h1>
 
-    <form>
+    <form method="get" action="/lab3/settings">
         <div>
             <label for="color">Выберите цвет текста:</label>
-            <input type="color" id="color" name="color" value="{{ color or ''}}">
+            <input type="color" id="color" name="color" value="{{ color or '' }}">
         </div>
         <div>
             <button type="submit">ОК</button>
         </div>
     </form>
+
+    <form method="get" action="/lab3/clear_cookies" style="margin-top: 20px;">
+        <button type="submit">Очистить Cookies</button>
+    </form>
 {% endblock %}
+
+
+
+

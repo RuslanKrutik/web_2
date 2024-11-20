@@ -5,10 +5,11 @@
 
 {# основной контент #}
 {% block main %}
-    {% if error %}
-        {{ error }}
-    {% else %}
-    <h1>Деление чисел</h1>
-    {{ x1 }} / {{ x2 }} = {{result}}
-    {% endif %}
+<h1>Результат суммирования</h1>
+{% if error %}
+    <p>{{ error }}</p>
+{% else %}
+    <p>{{ x1 }} + {{ x2 }} = {{ result }}</p>
+{% endif %}
+<a href="/lab4/sum-form">Назад</a>
 {% endblock %}

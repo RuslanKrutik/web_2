@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{# номер лабораторной #}
+{% block lab %} Лабораторная работа 5 {% endblock %}
+
+{% block main %}
+    <div class="welcome-container">
+        <h1>Добро пожаловать в приложение</h1>
+        <div class="user-info">Пользователь: <strong>anonymous</strong></div>
+        <p>Выберите одно из следующих действий:</p>
+        <div class="link-container">
+            <div class="link-box">
+                <a href="/lab5/login" class="link">Вход</a>
+            </div>
+            <div class="link-box">
+                <a href="/lab5/register" class="link">Регистрация</a>
+            </div>
+            <div class="link-box">
+                <a href="/lab5/list" class="link">Список статей</a>
+            </div>
+            <div class="link-box">
+                <a href="/lab5/create" class="link">Создать статью</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

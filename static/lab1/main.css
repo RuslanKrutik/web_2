@@ -145,3 +145,63 @@ button:hover {
     font-weight: bold;
     margin-top: 20px;
 }
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.user-info {
+    font-size: 18px;
+}
+
+.nav-links {
+    display: flex;
+}
+
+.nav-link {
+    margin: 0 15px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nav-link:hover {
+    text-decoration: underline;
+}
+
+.welcome-container {
+    text-align: center;
+    padding: 50px;
+}
+
+.link-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.link-box {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin: 10px;
+    padding: 20px;
+    width: 200px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.link-box:hover {
+    transform: scale(1.05);
+}
+
+.link {
+    text-decoration: none;
+    color: #1e90ff;
+    font-size: 18px;
+}

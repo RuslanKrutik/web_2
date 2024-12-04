@@ -182,3 +182,51 @@ def fridge():
             message = "Ошибка: не задана температура."
 
     return render_template("lab4/fridge.html", message=message)
+
+# Цены на зерно
+grain_prices = {
+    'barley': 12345,  # Ячмень
+    'oats': 8522,     # Овёс
+    'wheat': 8722,    # Пшеница
+    'rye': 14111      # Рожь
+}
+
+@lab4.route('/lab4/grain_order', methods=['GET', 'POST'])
+def grain_order():
+    message = ""
+    
+    if request.method == 'POST':
+        grain = request.form.get('grain')
+        weight = request.form.get('weight')
+
+        if not weight:
+            message = "Ошибка: вес не указан."
+            return render_template("lab4/grain_order.html", message=message)
+        
+        try:
+            weight = float(weight)
+
+            if weight <= 0:
+                message = "Ошибка: вес должен быть больше 0."
+                return render_template("lab4/grain_order.html", message=message)
+
+            if weight > 500:
+                message = "Ошибка: такого объёма сейчас нет в наличии."
+                return render_template("lab4/grain_order.html", message=message)
+
+            price_per_ton = grain_prices[grain]
+            total_cost = price_per_ton * weight
+
+            # Применение скидки
+            discount = 0
+            if weight > 50:
+                discount = total_cost * 0.1  # 10%
+                total_cost -= discount
+                message += "Применена скидка за большой объём: {:.2f} руб.".format(discount)
+
+            message += "Заказ успешно сформирован. Вы заказали зерно: {}. Вес: {:.1f} т. Сумма к оплате: {:.2f} руб.".format(grain, weight, total_cost)
+        except ValueError:
+            message = "Ошибка: некорректный ввод веса."
+            
+    
+    return render_template("/lab4/grain_order.html", message=message)

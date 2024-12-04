@@ -97,3 +97,51 @@ span.error {
     font-weight: bold;
     font-size: 14px;
 }
+.fridge-page {
+    text-align: center;
+    padding: 20px;
+}
+
+.fridge-image {
+    width: 300px; 
+    height: auto;
+    margin: 20px 0;
+}
+
+.temperature-form {
+    display: inline-block;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.temperature-form div {
+    margin-bottom: 15px;
+}
+
+input[type="number"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: calc(100% - 22px); /* Для учёта паддинга и бордера */
+}
+
+button {
+    background-color: #1e90ff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0b7dda;
+}
+
+.message {
+    color: blue;
+    font-weight: bold;
+    margin-top: 20px;
+}

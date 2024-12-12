@@ -6,7 +6,7 @@
 {% block main %}
     <div class="welcome-container">
         <h1>Добро пожаловать в приложение</h1>
-        <div class="user-info">Пользователь: <strong>anonymous</strong></div>
+        <div class="user-info">Пользователь: <strong>{{ login if login else 'Anonymous' }}</strong></div>
         <p>Выберите одно из следующих действий:</p>
         <div class="link-container">
             <div class="link-box">

@@ -1,5 +1,8 @@
 from flask import Blueprint, redirect, render_template, request, make_response, url_for, session
+from werkzeug.security import generate_password_hash, check_password_hash
 lab4 = Blueprint('lab4', __name__)
+
+lab4.secret_key = '1111'  # Замените на свой секретный ключ
 
 @lab4.route('/lab4')
 def lab():
@@ -230,3 +233,61 @@ def grain_order():
             
     
     return render_template("/lab4/grain_order.html", message=message)
+
+# Массив пользователей
+
+@lab4.route('/lab4/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        login = request.form['login']
+        password = request.form['password']
+        name = request.form['name']
+        
+        # Проверка на существование логина
+        for user in users:
+            if user['login'] == login:
+                return render_template('lab4/register.html', error='Этот логин уже занят.')
+        
+        # Добавление нового пользователя
+        users.append({
+            'login': login,
+            'password': generate_password_hash(password),
+            'name': name
+        })
+        
+        return redirect(url_for('lab4.login'))  # Перенаправление на страницу входа
+    
+    return render_template('lab4/register.html')
+
+@lab4.route('/lab4/users')
+def user_list():
+    if 'login' not in session:
+        return redirect(url_for('lab4.login'))  # Переход на страницу логина, если не авторизованы
+    
+    return render_template('lab4/user_list.html', users=users, current_user=session['login'])
+
+@lab4.route('/lab4/delete_user/<user_login>', methods=['POST'])
+def delete_user(user_login):
+    if 'login' not in session:
+        return redirect(url_for('lab4.login'))
+
+    global users
+    users = [user for user in users if user['login'] != user_login]  # Удаление пользователя
+    return redirect(url_for('lab4.user_list'))  # Переход обратно к списку пользователей
+
+@lab4.route('/lab4/edit_user/<user_login>', methods=['GET', 'POST'])
+def edit_user(user_login):
+    if 'login' not in session:
+        return redirect(url_for('lab4.login'))
+
+    user = next((u for u in users if u['login'] == user_login), None)
+    if not user:
+        return redirect(url_for('lab4.user_list'))
+
+    if request.method == 'POST':
+        user['name'] = request.form['name']
+        if request.form['password']:  # Изменение пароля только если поле не пустое
+            user['password'] = generate_password_hash(request.form['password'])
+        return redirect(url_for('lab4.user_list'))
+    
+    return render_template('lab4/edit_user.html', user=user)

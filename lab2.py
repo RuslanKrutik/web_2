@@ -3,7 +3,7 @@ lab2 = Blueprint('lab2', __name__)
 
 @lab2.route("/lab2/a")
 def a():
-    return 'без сэша'
+    return 'без слэша'
 
 @lab2.route('/lab2/a/')
 def a2():

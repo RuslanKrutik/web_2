@@ -4,8 +4,6 @@ import sqlite3
 from os import path
 
 lab5 = Blueprint('lab5', __name__)
-
-
 @lab5.route('/lab5')
 def lab():
     return render_template('lab5/lab5.html', login=session.get('login'))
@@ -37,14 +35,14 @@ def register():
     
     conn, cur = db_connect()
     
-    cur.execute("SELECT login FROM users WHERE login=%s;", (login,))
+    cur.execute("SELECT login FROM users WHERE login=?;", (login,))
     if cur.fetchone():
         db_close(conn, cur)
         return render_template('lab5/register.html',
                             error="Такой пользователь уже существует")
         
     password_hash = generate_password_hash(password)
-    cur.execute("INSERT INTO users (login, password) VALUES(%s, %s);", (login, password_hash))
+    cur.execute("INSERT INTO users (login, password) VALUES(?, ?);", (login, password_hash))
     db_close(conn, cur)
     return render_template('lab5/success.html', login=login)
 
@@ -59,14 +57,9 @@ def  login():
     if not (login or password):
         return render_template('lab5/login.html', error="Заполните поля")
     
-    conn = psycopg2.connect(
-        host = '127.0.0.1',
-        database = 'rus_krut_knowledge_base',
-        user = 'rus_krut_knowledge_base',
-        password = '123')
-    cur = conn.cursor(cursor_factory=RealDictCursor)
+    conn, cur = db_connect()
     
-    cur.execute("SELECT * FROM users WHERE login=%s;", (login, ))
+    cur.execute("SELECT * FROM users WHERE login=?;", (login, ))
     user = cur.fetchone()
     
     if not user:
@@ -98,11 +91,11 @@ def create():
     
     conn, cur = db_connect()
     
-    cur.execute("SELECT * FROM users WHERE login=%s;")
+    cur.execute("SELECT * FROM users WHERE login=?;")
     login_id = cur.fetchone()["id"]
     
     cur.execute("INSERT INTO articles(login_id, title, article_text)\
-                VALUES(%s, %s. %s)", (login_id, title, article_text))
+                VALUES(?, ?, ?)", (login_id, title, article_text))
     
     db_close(conn, cur)
     return redirect('/lab5')
@@ -115,10 +108,10 @@ def list():
     
     conn, cur = db_connect()
     
-    cur.execute("SELECT id FROM users WHERE login=%s",(login, ))
+    cur.execute("SELECT id FROM users WHERE login=?",(login, ))
     login_id = cur.fetchone()["id"]
     
-    cur.execute("SELECT * FROM articles WHERE login_id=%s", (login_id, ))
+    cur.execute("SELECT * FROM articles WHERE login_id=?", (login_id, ))
     articles = cur.fetchall()
     
     db_close(conn, cur)

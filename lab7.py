@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, abort, Response
+from flask import Blueprint, render_template, abort, Response, request
 import json
 
 lab7 = Blueprint('lab7', __name__)
@@ -69,4 +69,24 @@ def put_film(id):
         films[id] = film  # Обновление фильма
         return make_json_response(films[id], status_code=200)
     else:
-        abort(404, "Фильм с указанным ID не найден")  
+        abort(404, "Фильм с указанным ID не найден")
+
+@lab7.route('/lab7/rest-api/films/', methods=['POST'])
+def add_film():
+    new_film = request.get_json()
+
+    # Проверка на пустые данные
+    if not new_film:
+        abort(400, "Данные для добавления не предоставлены")
+
+    # Проверка на обязательные поля
+    required_fields = ["title", "title_ru", "year", "description"]
+    if not all(field in new_film for field in required_fields):
+        abort(400, "Отсутствуют обязательные поля")
+
+    # Добавление фильма в список
+    films.append(new_film)
+    new_index = len(films) - 1  # Индекс нового элемента
+
+    # Возвращаем индекс нового фильма
+    return make_json_response({"index": new_index}, status_code=201)

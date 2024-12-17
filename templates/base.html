@@ -2,29 +2,30 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width, initial-scale=1.0">
-    <title> Крутиков Руслан. {% block lab %}{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='lab1/main.css')}}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Крутиков Руслан. {% block lab %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='lab1/main.css') }}">
     <link rel="shortcut icon" href="static/lab1/favicon.ico" type="image/x-icon">
     <link rel="icon" href="static/lab1/favicon-32x32.png">
     <link rel="icon" href="static/lab1/favicon-16x16.png">
     <style>
-        body{
-        {% if request.cookies.get('color')%}
-        color: {{ request.cookies.get('color')}}
-        {% endif %}
+        body {
+            {% if request.cookies.get('color') %}
+                color: {{ request.cookies.get('color') }}
+            {% endif %}
         }
     </style>
-    {% block script %}{% endblock %}+
+    {% block script %}{% endblock %}
 </head>
+<body>
     <header>
-        WEB-программтрование, часть 2. {{self.lab()}}
+        WEB-программирование, часть 2. {{self.lab()}}
     </header>
     <main>
         {% block main %}{% endblock %}
     </main>
     <footer>
         &copy; Крутиков Руслан, ФБИ-21, 3 курс, 2024
-    <footer>
+    </footer>
 </body>
 </html>

@@ -1,207 +1,208 @@
+/* Основные стили для страницы */
 body {
     background-color: lightblue;
     color: maroon;
-    font-family: Arial;
-    margin: 0px;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
     width: 100%;
     height: 100vh;
     background-size: 300% 300%;
     background-image: linear-gradient(-45deg, rgb(0, 89, 255) 0%, rgb(0, 26, 255) 25%, rgb(82, 235, 214) 51%, #182ef1 100%);
-}
-
-main {
-    background-image: linear-gradient(-45deg, rgb(178, 183, 221) 0%, rgb(140, 247, 229) 25%, rgb(29, 235, 190) 51%, #87e28f 100%);
-    background-color: rgba(136, 226, 226, 0.801);
-    color: rgb(37, 30, 21);
-    font-family: Arial;
-    margin: 10px 20px 45px;
-}
-footer {
-    background-color: darkcyan;
-    color: rgba(223, 219, 219, 0.815);
-    font-family: Arial;
-    margin: 0px;
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    left: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 header {
     background-color: darkcyan;
-    color:  rgba(223, 219, 219, 0.815);
-    font-family: Arial;
-    margin: 0px;
-}
-
-a {
-    color: white;
-    text-decoration: none;
-    transition: 0.5s;
-}
-a:link {
-    color: rgb(48, 18, 18);
-    text-decoration: underline;
-}
-
-a:visited {
-    color: rgb(0, 89, 255);
-}
-
-a:hover {
-    color: gold;
-    text-decoration: underline;
-    transition: 0.1s;
-}
-
-a:active {
-    color: black;
-    opacity: 0.1;
-}
-
-div.menu {
-    border: 7px solid darkcyan;
-    border-radius: 5px;
-    width: 300px;
-    margin: 0 auto;
-}
-
-div.menu:hover {
-    background-color: rgb(179, 255, 0);
-    box-shadow: 0 0 15px rgb(37, 36, 36);
-}
-div.line_a {
-    line-height: 20px;
-    text-align: center;
-    background-color: rgb(15, 200, 233);
-    margin: 2px;
-    width: 220px;
-    display: block;
-
-}
-div.line_a:hover {
-    background-color: rgb(32, 32, 252);
-}
-h1 {
-    display: block;
-    border:3px solid;
-    color: rgba(0, 0, 0, 0.534);
-    box-shadow: 5ch red;
-    background-color: rgb(0, 255, 157);
-    text-align: center;
-}
-span.error {
-    margin-right: 5px;
-    vertical-align: middle;
-    color: #D8000C;
-    font-weight: bold;
-    font-size: 14px;
-}
-.fridge-page {
-    text-align: center;
+    color: rgba(223, 219, 219, 0.815);
+    font-family: Arial, sans-serif;
     padding: 20px;
+    text-align: center;
+    font-size: 1.5em;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.fridge-image {
-    width: 1200px; 
-    height: auto;
-    margin: 20px 0;
-}
-
-.temperature-form {
-    display: inline-block;
-    background-color: #ffffff;
+main {
+    background-color: rgba(136, 226, 226, 0.801);
+    margin: 20px auto;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    width: 95%;
+    max-width: 1200px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-.temperature-form div {
-    margin-bottom: 15px;
-}
-
-input[type="number"] {
+footer {
+    background-color: darkcyan;
+    color: rgba(223, 219, 219, 0.815);
+    font-family: Arial, sans-serif;
     padding: 10px;
-    border: 1px solid #ccc;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Стили для списка офисов */
+ul#office-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+ul#office-list li {
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 10px;
     border-radius: 5px;
-    width: calc(100% - 22px); /* Для учёта паддинга и бордера */
-}
-
-button {
-    background-color: #1e90ff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #0b7dda;
-}
-
-.message {
-    color: blue;
-    font-weight: bold;
-    margin-top: 20px;
-}
-
-.navbar {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
 }
 
-.user-info {
-    font-size: 18px;
-}
-
-.nav-links {
-    display: flex;
-}
-
-.nav-link {
-    margin: 0 15px;
+ul#office-list li button {
+    background-color: #1e90ff;
     color: white;
-    text-decoration: none;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+ul#office-list li button:hover {
+    background-color: #0b7dda;
+}
+
+/* Для стоимости аренды */
+h2 {
+    text-align: center;
+    margin-top: 20px;
+    color: #333;
+    font-size: 1.2em;
     font-weight: bold;
 }
 
-.nav-link:hover {
+ul#office-list li .office-info {
+    flex-grow: 1;
+    text-align: left;
+}
+
+ul#office-list li .price {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+/* Уведомления и ошибки */
+.message {
+    color: #0077cc;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Адаптивность */
+@media screen and (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    main {
+        width: 100%;
+        padding: 15px;
+    }
+
+    footer {
+        padding: 5px;
+    }
+
+    ul#office-list li {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    ul#office-list li button {
+        margin-top: 10px;
+    }
+}
+/* Контейнер для ссылок */
+.link-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Центрируем ссылки по горизонтали */
+    justify-content: center;
+    margin-top: 30px;
+}
+
+/* Стилизация ссылок */
+.link-container a {
+    display: inline-block;
+    text-decoration: none;
+    color: #1e90ff; /* Яркий синий цвет */
+    font-size: 20px;
+    margin: 10px 0; /* Отступы между ссылками */
+    font-weight: bold;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+/* Наведение на ссылки */
+.link-container a:hover {
+    color: #ffa500; /* Оранжевый цвет при наведении */
+    transform: scale(1.1); /* Небольшое увеличение */
     text-decoration: underline;
 }
 
-.welcome-container {
+/* Заголовок по центру */
+h1 {
     text-align: center;
-    padding: 50px;
+    color: maroon;
+    font-size: 28px;
+    margin-bottom: 20px;
 }
-
-.link-container {
+.menu {
     display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.link-box {
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    margin: 10px;
+    flex-direction: column;
+    align-items: center; /* Центрируем меню по горизонтали */
+    margin: 30px auto;
+    background: #ffffff;
     padding: 20px;
-    width: 200px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s;
+    border: 2px solid darkcyan;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: fit-content; /* Ширина под содержимое */
 }
 
-.link-box:hover {
-    transform: scale(1.05);
+/* Убираем маркеры у списка */
+.menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-.link {
-    text-decoration: none;
-    color: #1e90ff;
+/* Стилизация элементов списка */
+.menu li {
+    margin: 10px 0;
+    text-align: center;
     font-size: 18px;
+    font-weight: bold;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+/* Стилизация ссылок */
+.menu li a {
+    text-decoration: none;
+    color: darkcyan;
+    padding: 10px 20px;
+    display: inline-block;
+    border-radius: 5px;
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+/* Наведение на ссылки */
+.menu li a:hover {
+    color: white;
+    background-color: darkcyan;
+    transform: scale(1.05); /* Небольшое увеличение */
 }

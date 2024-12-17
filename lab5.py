@@ -5,6 +5,10 @@ from os import path
 
 lab5 = Blueprint('lab5', __name__)
 
+@lab5.route('/lab5')
+def lab():
+    return render_template('lab5/lab5.html', login=session.get('login'))
+
 def db_connect():
     dir_path = path.dirname(path.realpath(__file__))
     db_path = path.join(dir_path, "database.db")
@@ -13,13 +17,11 @@ def db_connect():
     cur = conn.cursor()
     return conn, cur
 
-def db_close(conn):
+def db_close(conn, cur):
     conn.commit()
+    cur.close()
     conn.close()
-
-@lab5.route('/lab5')
-def lab():
-    return render_template('lab5/lab5.html', login=session.get('login'))
+    
 
 @lab5.route('/lab5/register', methods=['GET', 'POST'])
 def register():
@@ -34,12 +36,12 @@ def register():
         cur.execute("SELECT login FROM users WHERE login=?;", (login,))
         
         if cur.fetchone():
-            db_close(conn)
+            db_close(conn, cur)
             return render_template('lab5/register.html', error="Такой пользователь уже существует")
         
         password_hash = generate_password_hash(password)
         cur.execute("INSERT INTO users (login, password) VALUES(?, ?);", (login, password_hash))
-        db_close(conn)
+        db_close(conn, cur)
         return render_template('lab5/success.html', login=login)
     
     return render_template('lab5/register.html')
@@ -58,11 +60,11 @@ def login():
         user = cur.fetchone()
         
         if not user or not check_password_hash(user['password'], password):
-            db_close(conn)
+            db_close(conn, cur)
             return render_template('lab5/login.html', error='Логин и/или пароль неверны')
         
         session['login'] = login
-        db_close(conn)
+        db_close(conn, cur)
         return redirect('/lab5')
     
     return render_template('lab5/login.html')
@@ -91,7 +93,7 @@ def create():
         
         cur.execute("INSERT INTO articles(login_id, title, article_text) VALUES(?, ?, ?)",
                     (user_id, title, article_text))
-        db_close(conn)
+        db_close(conn, cur)
         return redirect('/lab5')
     
     return render_template('lab5/create_article.html')
@@ -108,7 +110,7 @@ def list():
 
     cur.execute("SELECT * FROM articles WHERE login_id=?", (user_id,))
     articles = cur.fetchall()
-    db_close(conn)
+    db_close(conn, cur)
     
     if not articles:
         return render_template('lab5/articles.html', articles=None, message="У вас нет статей.")
@@ -131,12 +133,12 @@ def edit(article_id):
             return render_template('lab5/edit_article.html', error="Тема или текст не могут быть пустыми", article_id=article_id)
 
         cur.execute("UPDATE articles SET title=?, article_text=? WHERE id=?", (title, article_text, article_id))
-        db_close(conn)
+        db_close(conn, cur)
         return redirect('/lab5/list')
 
     cur.execute("SELECT * FROM articles WHERE id=?;", (article_id,))
     article = cur.fetchone()
-    db_close(conn)
+    db_close(conn, cur)
     
     return render_template('lab5/edit_article.html', article=article)
 
@@ -144,5 +146,5 @@ def edit(article_id):
 def delete(article_id):
     conn, cur = db_connect()
     cur.execute("DELETE FROM articles WHERE id=?", (article_id,))
-    db_close(conn)
+    db_close(conn, cur)
     return redirect('/lab5/list')

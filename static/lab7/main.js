@@ -8,7 +8,7 @@ function fillFilmList() {
             tbody.innerHTML = '';
 
             for (let i = 0; i < films.length; i++) {
-                let tr = document.createElement('tr'); // Исправлено
+                let tr = document.createElement('tr');
 
                 let tdTitle = document.createElement('td');
                 let tdTitleRus = document.createElement('td');
@@ -23,13 +23,16 @@ function fillFilmList() {
                 // Кнопка редактирования
                 let editButton = document.createElement('button');
                 editButton.innerText = 'Редактировать';
+                editButton.onclick = function () {
+                    editFilm(i);
+                };
 
                 // Кнопка удаления
                 let delButton = document.createElement('button');
                 delButton.innerText = 'Удалить';
-                delButton.onclick = function() {
+                delButton.onclick = function () {
                     deleteFilm(i, films[i].title_ru);
-                }
+                };
 
                 // Добавляем кнопки в ячейку действий
                 tdActions.append(editButton);
@@ -39,7 +42,7 @@ function fillFilmList() {
                 tr.append(tdTitle);
                 tr.append(tdTitleRus);
                 tr.append(tdYear);
-                tr.append(tdActions); // Исправлено
+                tr.append(tdActions);
 
                 // Добавляем строку в таблицу
                 tbody.append(tr);
@@ -49,52 +52,89 @@ function fillFilmList() {
             console.error('Ошибка при загрузке фильмов:', error);
         });
 }
-function deleteFilm(num) {
-    if(! confirm('Вы точно хотите удалить фильм "${title}"?'))
-        return;
 
-    fetch('/lab7/rest-api/film/${id}', {method: 'DELETE'})
-        .then(function() {
-            fillFilmList ();
+function deleteFilm(id, title) {
+    if (!confirm(`Вы точно хотите удалить фильм "${title}"?`)) return;
+
+    fetch(`/lab7/rest-api/films/${id}`, { method: 'DELETE' })
+        .then(function () {
+            fillFilmList();
+        })
+        .catch(function (error) {
+            console.error('Ошибка при удалении фильма:', error);
         });
-    
-}
-function showModal() {
-    document.querySelector('div.modal').style.display = 'block';
-}
-function hideModal() {
-    document.querySelector('div.modal').style.display = 'none';
-}
-function cancel() {
-    hideModal();
-}
-function addFilm(){
-    document.getElementById('id').value = '';
-    document.getElementById('title').value = '';
-    document.getElementById('title-ru').value = '';
-    document.getElementById('year').value = '';
-    document.getElementById('year').value = '';
-
-    showModal(); 
 }
 
 function sendFilm() {
+    const id = document.getElementById('id').value;
     const film = {
         title: document.getElementById('title').value,
         title_ru: document.getElementById('title-ru').value,
         year: document.getElementById('year').value,
         description: document.getElementById('description').value
-    }
-    const url = '/lab7/rest-api/films/';
-    const method = 'POST';
-    
+    };
+
+    const url = id === '' ? '/lab7/rest-api/films/' : `/lab7/rest-api/films/${id}`;
+    const method = id === '' ? 'POST' : 'PUT';
+
     fetch(url, {
         method: method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(film)
     })
-    .then(function() {
-        fillFilmList();
-        hideModal();
+
+    .then(function (resp) {
+        if(resp.ok) {
+            fillFilmList();
+            hideModal();
+            return {}
+        }
+        return resp.json();
+    })
+    .then(function (errors) {
+        if(errors.description)
+            document.getElementById('description-error').innerText = errors.description;
     });
+}
+
+function editFilm(id) {
+    fetch(`/lab7/rest-api/films/${id}`)
+        .then(function (data) {
+            return data.json();
+        })
+        .then(function (film) {
+            document.getElementById('id').value = id;
+            document.getElementById('title').value = film.title;
+            document.getElementById('title-ru').value = film.title_ru;
+            document.getElementById('year').value = film.year;
+            document.getElementById('description').value = film.description;
+            showModal();
+        })
+        .catch(function (error) {
+            console.error('Ошибка при загрузке фильма для редактирования:', error);
+        });
+}
+
+function showModal() {
+    document.querySelector('div.modal').style.display = 'block';
+    // Очистка сообщений об ошибках
+    document.getElementById('description-error').innerText = '';
+}
+
+function hideModal() {
+    document.querySelector('div.modal').style.display = 'none';
+}
+
+function cancel() {
+    hideModal();
+}
+
+function addFilm() {
+    document.getElementById('id').value = '';
+    document.getElementById('title').value = '';
+    document.getElementById('title-ru').value = '';
+    document.getElementById('year').value = '';
+    document.getElementById('description').value = '';
+    document.getElementById('description-error').innerText = ''; // Очистка ошибки описания
+    showModal();
 }

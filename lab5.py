@@ -30,8 +30,7 @@ def register():
         if not (login and password):
             return render_template('lab5/register.html', error='Заполните все поля')
         
-        conn = db_connect()
-        cur = conn.cursor()
+        conn, cur = db_connect()
         cur.execute("SELECT login FROM users WHERE login=?;", (login,))
         
         if cur.fetchone():
@@ -54,8 +53,7 @@ def login():
         if not (login and password):
             return render_template('lab5/login.html', error="Заполните поля")
         
-        conn = db_connect()
-        cur = conn.cursor()
+        conn, cur = db_connect()
         cur.execute("SELECT * FROM users WHERE login=?;", (login,))
         user = cur.fetchone()
         
@@ -87,8 +85,7 @@ def create():
         if not title or not article_text:
             return render_template('lab5/create_article.html', error="Тема или текст не могут быть пустыми")
         
-        conn = db_connect()
-        cur = conn.cursor()
+        conn, cur = db_connect()
         cur.execute("SELECT id FROM users WHERE login=?;", (login,))
         user_id = cur.fetchone()["id"]
         
@@ -105,8 +102,7 @@ def list():
     if not login:
         return redirect('/lab5/login')
     
-    conn = db_connect()
-    cur = conn.cursor()
+    conn, cur = db_connect()
     cur.execute("SELECT id FROM users WHERE login=?;", (login,))
     user_id = cur.fetchone()["id"]
 
@@ -125,8 +121,7 @@ def edit(article_id):
     if not login:
         return redirect('/lab5/login')
     
-    conn = db_connect()
-    cur = conn.cursor()
+    conn, cur = db_connect()
 
     if request.method == 'POST':
         title = request.form.get('title')
@@ -147,8 +142,7 @@ def edit(article_id):
 
 @lab5.route('/lab5/delete/<int:article_id>', methods=['POST'])
 def delete(article_id):
-    conn = db_connect()
-    cur = conn.cursor()
+    conn, cur = db_connect()
     cur.execute("DELETE FROM articles WHERE id=?", (article_id,))
     db_close(conn)
     return redirect('/lab5/list')

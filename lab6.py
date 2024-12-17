@@ -4,16 +4,17 @@ lab6 = Blueprint('lab6', __name__)
 
 offices = []
 for i in range(1, 11):
-    offices.append({"number": i, "tenant": ""})  # Убираем лишние вложенные списки
+    offices.append({"number": i, "tenant": "", "price": 1000 + i % 3})  # Цена аренды
 
 @lab6.route('/lab6/')
 def main():
-    return render_template('lab6/lab6.html')
+    total_rent = sum(office['price'] for office in offices if office['tenant'] != '')
+    return render_template('lab6/lab6.html', offices=offices, total_rent=total_rent)
 
 @lab6.route('/lab6/json-rpc-api/', methods=['POST'])
 def api():
     data = request.json
-    id = data.get('id')  # Убедитесь, что id установлен
+    id = data.get('id')
 
     if data['method'] == 'info':
         return {
@@ -23,7 +24,7 @@ def api():
         }
 
     login = session.get('login')
-    if not login:     
+    if not login:
         return {
             'jsonrpc': '2.0',
             'error': {
@@ -46,7 +47,7 @@ def api():
                         },
                         'id': id
                     }
-                office['tenant'] = login  # Правильное присваивание
+                office['tenant'] = login
                 return {
                     'jsonrpc': '2.0',
                     'result': 'success',

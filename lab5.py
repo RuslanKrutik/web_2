@@ -51,22 +51,22 @@ def login():
     if request.method == 'POST':
         login = request.form.get('login')
         password = request.form.get('password')
-        
+
         if not (login and password):
             return render_template('lab5/login.html', error="Заполните поля")
-        
+
         conn, cur = db_connect()
         cur.execute("SELECT * FROM users WHERE login=?;", (login,))
         user = cur.fetchone()
-        
+
         if not user or not check_password_hash(user['password'], password):
             db_close(conn, cur)
             return render_template('lab5/login.html', error='Логин и/или пароль неверны')
-        
+
         session['login'] = login
         db_close(conn, cur)
-        return redirect('/lab5')
-    
+        return redirect(url_for('lab5.lab'))  # Используем url_for вместо жёсткого пути
+
     return render_template('lab5/login.html')
 
 @lab5.route('/lab5/logout')

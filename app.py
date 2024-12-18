@@ -1,6 +1,5 @@
-from flask import Flask, url_for, redirect, abort, render_template
+from flask import Flask, url_for, render_template
 import os
-from werkzeug.exceptions import HTTPException
 from db import db
 from os import path
 from db.models import users
@@ -42,9 +41,6 @@ app.register_blueprint(lab5)
 app.register_blueprint(lab6)
 app.register_blueprint(lab7)
 app.register_blueprint(lab8)
-class PaymentRequired(HTTPException):
-    code = 402
-    description = "Требуется оплата."
 
 @app.route("/")
 @app.route("/index")
@@ -76,19 +72,6 @@ def unauthorized_error(error):
         </body>
     </html>
     ''', 401
-
-@app.errorhandler(PaymentRequired)
-def payment_required_error(error):
-    return '''
-    <!doctype html>
-    <html>
-        <head><title>402 Payment Required</title></head>
-        <body>
-            <h1>402 Payment Required</h1>
-            <p>Требуется оплата.</p>
-        </body>
-    </html>
-    ''', 402
 
 @app.errorhandler(403)
 def forbidden_error(error):

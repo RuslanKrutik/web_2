@@ -393,17 +393,78 @@ button:disabled {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
-
-.lab8-form button {
-    margin-top: 15px;
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+/* Стили для списка статей */
+.lab8-page ul {
+    list-style-type: none; /* Убираем маркеры списка */
+    padding: 0;
 }
 
-.lab8-form button:hover {
-    background-color: #45a049;
+.lab8-page li {
+    border: 1px solid #ddd; /* Рамка вокруг статьи */
+    border-radius: 8px; /* Скругленные углы */
+    margin-bottom: 20px; /* Отступ между статьями */
+    padding: 15px; /* Внутренние отступы */
+    background-color: #fdfdfd; /* Легкий фон */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Тень для выделения */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Анимация при наведении */
+}
+
+.lab8-page li:hover {
+    transform: translateY(-5px); /* Поднимаем карточку при наведении */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Увеличиваем тень при наведении */
+}
+
+.lab8-page h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+    font-weight: bold;
+}
+
+.lab8-page p {
+    margin: 10px 0;
+    color: #555;
+    line-height: 1.6;
+}
+
+/* Кнопки для редактирования и удаления */
+.lab8-page button {
+    padding: 8px 12px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #4CAF50; /* Зеленый цвет для кнопок */
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.lab8-page button:hover {
+    background-color: #45a049; /* Темнее при наведении */
+}
+
+/* Красная кнопка для удаления */
+.lab8-page form button {
+    background-color: #f44336; /* Красный цвет */
+}
+
+.lab8-page form button:hover {
+    background-color: #d32f2f; /* Темнее при наведении */
+}
+
+/* Секция для создания новой статьи */
+.lab8-page .create-article {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.lab8-page .create-article button {
+    padding: 10px 20px;
+    background-color: #007BFF; /* Синяя кнопка для создания статьи */
+    border-radius: 5px;
+    color: white;
+}
+
+.lab8-page .create-article button:hover {
+    background-color: #0056b3; /* Темнее при наведении */
 }

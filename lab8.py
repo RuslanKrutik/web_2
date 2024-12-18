@@ -65,15 +65,19 @@ def login():
         return redirect('/lab8/')
     else:
         return render_template('lab8/login.html', error="Ошибка входа: логин или пароль неверны")
+    
 @lab8.route('/lab8/articles/create/', methods=['GET', 'POST'])
 @login_required
 def create_article():
     if request.method == 'POST':
         title = request.form.get('title')
         article_text = request.form.get('article_text')
+        
+        # Проверка на заполненность полей
         if not title or not article_text:
             return render_template('lab8/create_article.html', error="Заполните все поля")
         
+        # Добавление статьи в базу
         new_article = articles(title=title, article_text=article_text, login_id=current_user.id)
         db.session.add(new_article)
         db.session.commit()

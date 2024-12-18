@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block lab %}Создание статьи{% endblock %}
+{% block main %}
+
+    {% if error %}
+        <div style="color: red;">{{ error }}</div>
+    {% endif %}
+    <h1>Создание статьи</h1>
+    <form method="POST" class="lab8-form">
+        <label>Название статьи:</label>
+        <input type="text" name="title" required>
+        <label>Текст статьи:</label>
+        <textarea name="article_text" rows="5" required></textarea>
+        <button type="submit">Создать</button>
+    </form>
+{% endblock %}

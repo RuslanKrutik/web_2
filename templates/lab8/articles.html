@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block lab %} Лабораторная работа 8 {% endblock %}
+
+{% block main %}
+    <div class="lab8-page">
+        <h1>Мои статьи</h1>
+        
+        <!-- Проверка наличия статей -->
+        {% if articles %}
+            <ul>
+                {% for article in articles %}
+                    <li>
+                        <h2>{{ article.title }}</h2>
+                        <p>{{ article.article_text }}</p>
+                        <div>
+                            <a href="{{ url_for('lab8.edit_article', article_id=article.id) }}">
+                                <button>Редактировать</button>
+                            </a>
+                            
+                        
+                            <form method="POST" action="{{ url_for('lab8.delete_article', article_id=article.id) }}" style="display: inline;">
+                                <button type="submit" onclick="return confirm('Вы уверены, что хотите удалить статью?');">
+                                    Удалить
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>У вас пока нет статей.</p>
+        {% endif %}
+
+        <div style="margin-top: 20px;">
+            <a href="{{ url_for('lab8.create_article') }}">
+                <button>Создать новую статью</button>
+            </a>
+        </div>
+    </div>
+{% endblock %}

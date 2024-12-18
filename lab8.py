@@ -37,7 +37,6 @@ def register():
     db.session.add(new_user)
     db.session.commit()
     return redirect('/lab8/')
-@lab8.route('/lab8/login', methods = ['GET', 'POST'])
 
 @lab8.route('/lab8/login', methods=['GET', 'POST'])
 def login():
@@ -70,3 +69,9 @@ def login():
 @login_required
 def article_list():
     return "список статей"
+
+@lab8.route('/lab8/logout/')
+@login_required
+def logout():
+    logout_user()
+    return redirect('/lab8/')

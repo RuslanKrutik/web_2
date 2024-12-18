@@ -8,6 +8,10 @@ from flask_login import login_user, login_required, current_user
 
 lab8 = Blueprint('lab8', __name__)
 
+@lab8.route('/lab8/')
+def main():
+    return render_template('lab8/lab8.html')
+
 @lab8.route('/lab8/register/', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':

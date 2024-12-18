@@ -117,8 +117,8 @@ def article_list():
     user_articles = articles.query.filter_by(login_id=current_user.id).all()
     return render_template('lab8/articles.html', articles=user_articles)
 
-@lab8.route('/lab8/logout/')
+@lab8.route('/lab8/logout/', methods=['POST'])
 @login_required
 def logout():
-    logout_user()
+    logout_user() 
     return redirect('/lab8/')

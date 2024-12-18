@@ -6,7 +6,22 @@
 {% block main %}
     <div class="container">
         <h1 class="header">Добро пожаловать в приложение</h1>
-        <div class="user-info">Пользователь: <strong>{{ login if login else 'Anonymous' }}</strong></div>
+        
+        <!-- Информация о пользователе -->
+        <div class="user-info">
+            Пользователь: 
+            <strong>{{ current_user.login if current_user.is_authenticated else 'Anonymous' }}</strong>
+        </div>
+
+        <!-- Если пользователь авторизован, отображаем кнопку выхода -->
+        {% if current_user.is_authenticated %}
+            <div class="logout-container">
+                <form action="{{ url_for('lab8.logout') }}" method="post" class="logout-form">
+                    <button type="submit" class="logout-button">Выйти</button>
+                </form>
+            </div>
+        {% endif %}
+
         <p class="description">Выберите одно из следующих действий:</p>
         <div class="link-container">
             <div class="link-box">

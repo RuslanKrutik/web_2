@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{# номер лабораторной #}
+{% block lab %} Лабораторная работа 5 {% endblock %}
+
+{% block script %}{% endblock %}
+
+{% block main %}
+
+<div class="lab9-page">
+    <h1>Привет, {{ name }}! Укажите ваш возраст:</h1>
+    <form method="POST">
+        <label for="age">Возраст:</label>
+        <input type="number" name="age" id="age" required>
+        <button type="submit">Далее</button>
+    </form>
+</div>
+
+
+{% endblock %}

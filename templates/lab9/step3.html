@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{# номер лабораторной #}
+{% block lab %} Лабораторная работа 5 {% endblock %}
+
+{% block script %}{% endblock %}
+
+{% block main %}
+
+<div class="lab9-page">
+    <h1>Привет, {{ name }}! Укажите ваш пол:</h1>
+    <form method="POST">
+        <label><input type="radio" name="gender" value="male" required> Мужчина</label>
+        <label><input type="radio" name="gender" value="female" required> Женщина</label>
+        <button type="submit">Далее</button>
+    </form>
+</div>
+
+{% endblock %}

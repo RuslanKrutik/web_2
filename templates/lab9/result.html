@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{# номер лабораторной #}
+{% block lab %} Лабораторная работа 5 {% endblock %}
+
+{% block script %}{% endblock %}
+
+{% block main %}
+
+<div class="lab9-page">
+    <div class="result">
+        <h1>{{ wish }}</h1>
+        <p>Вот вам подарок — <strong>{{ gift }}</strong>.</p>
+        <img src="{{ url_for('static', filename=image) }}" alt="{{ gift }}">
+    </div>
+</div>
+
+{% endblock %}

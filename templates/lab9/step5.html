@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{# номер лабораторной #}
+{% block lab %} Лабораторная работа 5 {% endblock %}
+
+{% block script %}{% endblock %}
+
+{% block main %}
+
+<div class="lab9-page">
+    <h1>Что вы предпочитаете?</h1>
+    <form method="POST">
+        {% if choice1 == 'tasty' %}
+            <button type="submit" name="choice2" value="sweet">Сладкое</button>
+            <button type="submit" name="choice2" value="savory">Сытное</button>
+        {% else %}
+            <button type="submit" name="choice2" value="flowers">Цветы</button>
+            <button type="submit" name="choice2" value="painting">Картины</button>
+        {% endif %}
+    </form>
+</div>
+
+{% endblock %}

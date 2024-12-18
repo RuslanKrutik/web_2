@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, abort, Response, request
+from datetime import datetime
 import json
 
 lab7 = Blueprint('lab7', __name__)
@@ -29,73 +30,80 @@ films = [
     }
 ]
 
+# Функция для создания JSON-ответов
 def make_json_response(data, status_code=200):
-    """Функция для создания JSON-ответа вручную"""
     response = Response(json.dumps(data, ensure_ascii=False), status=status_code, mimetype='application/json')
     return response
 
-@lab7.route('/lab7/rest-api/films/', methods=['GET'])
-def get_films():
-    """Возвращает весь список фильмов"""
-    return make_json_response(films)
+# Функция валидации данных фильма
+def validate_film(data):
+    errors = {}
+    current_year = datetime.now().year  # Текущий год
 
-@lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])
-def get_film_by_id(id):
-    """Возвращает фильм по ID с проверкой диапазона"""
-    if 0 <= id < len(films):
-        return make_json_response(films[id])
-    else:
-        abort(404, description="Фильм с указанным ID не найден")
+    # Проверка на наличие русскоязычного названия
+    if not data.get('title_ru') or not data['title_ru'].strip():
+        errors['title_ru'] = "Русское название не может быть пустым."
 
-@lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
-def del_film(id):
-    """Удаляет фильм по ID с проверкой диапазона"""
-    if 0 <= id < len(films):
-        deleted_film = films.pop(id)
-        return make_json_response({"message": f"Фильм '{deleted_film['title']}' успешно удален"})
-    else:
-        abort(404, description="Фильм с указанным ID не найден")
+    # Проверка оригинального названия
+    if not data.get('title') or not data['title'].strip():
+        if not data.get('title_ru') or not data['title_ru'].strip():
+            errors['title'] = "Название на оригинальном языке не может быть пустым, если русское название отсутствует."
 
-@lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
-def put_film(id):
-    """Обновляет информацию о фильме по ID с проверкой диапазона"""
-    if 0 <= id < len(films):
-        film = request.get_json()
-
-        # Проверка описания
-        if not film.get('description'):
-            return make_json_response({"description": "Описание фильма не может быть пустым"}, 400)
-
-        # Проверка на обязательные поля
-        required_fields = ["title", "title_ru", "year", "description"]
-        if not all(field in film for field in required_fields):
-            return make_json_response({"error": "Отсутствуют обязательные поля"}, 400)
-
-        films[id] = film  # Обновление фильма
-        return make_json_response(films[id], status_code=200)
-    else:
-        abort(404, description="Фильм с указанным ID не найден")
-
-@lab7.route('/lab7/rest-api/films/', methods=['POST'])
-def add_film():
-    """Добавляет новый фильм с проверкой на пустые поля"""
-    new_film = request.get_json()
-
-    # Проверка на пустые данные
-    if not new_film:
-        return make_json_response({"error": "Данные для добавления не предоставлены"}, 400)
-
-    # Проверка на обязательные поля
-    required_fields = ["title", "title_ru", "year", "description"]
-    if not all(field in new_film for field in required_fields):
-        return make_json_response({"error": "Отсутствуют обязательные поля"}, 400)
+    # Проверка года выпуска
+    if 'year' not in data or not isinstance(data['year'], int):
+        errors['year'] = "Год выпуска должен быть числом."
+    elif data['year'] < 1895 or data['year'] > current_year:
+        errors['year'] = f"Год выпуска должен быть от 1895 до {current_year}."
 
     # Проверка описания
-    if not new_film.get('description'):
-        return make_json_response({"description": "Описание фильма не может быть пустым"}, 400)
+    if not data.get('description') or not data['description'].strip():
+        errors['description'] = "Описание не может быть пустым."
+    elif len(data['description']) > 2000:
+        errors['description'] = "Описание не может превышать 2000 символов."
 
-    # Добавление фильма в список
-    films.append(new_film)
-    new_index = len(films) - 1  # Индекс нового элемента
+    return errors
 
-    return make_json_response({"index": new_index}, status_code=201)
+# Маршрут для получения всех фильмов
+@lab7.route('/lab7/rest-api/films/', methods=['GET'])
+def get_films():
+    return make_json_response(films)
+
+# Маршрут для получения фильма по ID
+@lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])
+def get_film_by_id(id):
+    if 0 <= id < len(films):
+        return make_json_response(films[id])
+    abort(404, description="Фильм с указанным ID не найден.")
+
+# Маршрут для удаления фильма по ID
+@lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
+def del_film(id):
+    if 0 <= id < len(films):
+        deleted_film = films.pop(id)
+        return make_json_response({"message": f"Фильм '{deleted_film['title']}' успешно удален."})
+    abort(404, description="Фильм с указанным ID не найден.")
+
+# Маршрут для обновления фильма
+@lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
+def put_film(id):
+    if 0 <= id < len(films):
+        data = request.get_json()
+        errors = validate_film(data)
+        if errors:
+            return make_json_response(errors, 400)
+
+        films[id] = data
+        return make_json_response(films[id])
+    abort(404, description="Фильм с указанным ID не найден.")
+
+# Маршрут для добавления нового фильма
+@lab7.route('/lab7/rest-api/films/', methods=['POST'])
+def add_film():
+    data = request.get_json()
+    errors = validate_film(data)
+    if errors:
+        return make_json_response(errors, 400)
+
+    films.append(data)
+    new_index = len(films) - 1
+    return make_json_response({"index": new_index}, 201)

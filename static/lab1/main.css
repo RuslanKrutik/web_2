@@ -128,13 +128,7 @@ ul#office-list li .price {
     }
 }
 /* Контейнер для ссылок */
-.link-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Центрируем ссылки по горизонтали */
-    justify-content: center;
-    margin-top: 30px;
-}
+
 
 /* Стилизация ссылок */
 .link-container a {
@@ -287,4 +281,95 @@ button:disabled {
 
 .modal-buttons {
     text-align: right;
+}
+
+/* Основной контейнер страницы */
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Заголовок */
+.header {
+    font-size: 2.5rem;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Информация о пользователе */
+.user-info {
+    font-size: 1.2rem;
+    color: #555;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Описание под заголовком */
+.description {
+    font-size: 1.2rem;
+    color: #555;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Контейнер для ссылок */
+.link-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+/* Стиль для коробок с ссылками */
+.link-box {
+    width: 100%;
+    max-width: 350px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* При наведении на коробку ссылки */
+.link-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Ссылки */
+.link {
+    text-decoration: none;
+    color: #007BFF;
+    font-size: 1.2rem;
+    display: block;
+    text-align: center;
+}
+
+/* Цвет ссылки при наведении */
+.link:hover {
+    color: #0056b3;
+}
+
+/* Установим отступы на мобильных устройствах */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    .header {
+        font-size: 2rem;
+    }
+    .description,
+    .user-info {
+        font-size: 1rem;
+    }
+    .link {
+        font-size: 1.1rem;
+    }
 }

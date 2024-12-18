@@ -4,10 +4,10 @@
 {% block lab %} Лабораторная работа 5 {% endblock %}
 
 {% block main %}
-    <div class="welcome-container">
-        <h1>Добро пожаловать в приложение</h1>
-        <div class="user-info">Пользователь: <strong>{{ login if login else 'Anonymous' }}</strong></div>
-        <p>Выберите одно из следующих действий:</p>
+<div class="container">
+    <h1 class="header">Добро пожаловать в приложение</h1>
+    <div class="user-info">Пользователь: <strong>{{ login if login else 'Anonymous' }}</strong></div>
+    <p class="description">Выберите одно из следующих действий:</p>
         <div class="link-container">
             <div class="link-box">
                 <a href="/lab5/login" class="link">Вход</a>

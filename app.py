@@ -1,7 +1,6 @@
 from flask import Flask, url_for, redirect, abort, render_template
 import os
 from werkzeug.exceptions import HTTPException
-from flask_sqlalchemy import SQLAlchemy
 from db import db
 from os import path
 

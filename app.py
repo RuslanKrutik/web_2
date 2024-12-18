@@ -3,7 +3,7 @@ import os
 from db import db
 from os import path
 from db.models import users
-from flask import LoginManager
+from flask_login import LoginManager
 
 from lab1 import lab1
 from lab2 import lab2

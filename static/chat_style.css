@@ -1,48 +1,103 @@
-/* Список пользователей */
-#user-list {
-    width: 25%;
-    background: #f4f4f4;
-    border-right: 1px solid #ddd;
-    overflow-y: auto;
+/* Общие настройки */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e6f7e1;
     height: 100vh;
-    float: left;
 }
 
-.user-item {
+.chat-container {
+    display: flex;
+    width: 90%;
+    max-width: 1200px;
+    height: 80%;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    background-color: white;
+}
+
+/* Сайдбар (список пользователей) */
+.sidebar {
+    width: 30%;
+    background-color: #f0f4f7;
+    border-right: 1px solid #ccc;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sidebar h2 {
+    margin: 10px 0;
+    font-size: 18px;
+}
+
+.user-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.user-list li {
     display: flex;
     align-items: center;
     padding: 10px;
+    border-bottom: 1px solid #ccc;
     cursor: pointer;
-    border-bottom: 1px solid #ddd;
+    transition: background-color 0.3s ease;
 }
 
-.user-item:hover {
-    background: #e9e9e9;
+.user-list li:hover {
+    background-color: #e0e7ff;
 }
 
 .user-icon {
-    background: #007bff;
-    color: white;
     width: 40px;
     height: 40px;
     border-radius: 50%;
+    background-color: #ccc;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    font-size: 18px;
     margin-right: 10px;
+    color: white;
+    font-weight: bold;
+    background-color: #4CAF50;
+}
+
+/* Окно чата */
+.chat-window {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.chat-header {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    background-color: #f7f9fb;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #4CAF50;
 }
 
 /* Сообщения */
-#message-list {
-    width: 75%;
-    background: #e0f7e9;
+.message-list {
+    flex: 1;
     overflow-y: auto;
-    height: calc(100vh - 50px);
-    float: right;
-    padding: 20px;
+    padding: 10px;
+    background-color: #d9f2dc;
 }
 
-/* Сообщения */
 .message {
     margin: 10px 0;
     padding: 15px;
@@ -59,10 +114,42 @@
     background-color: #cce5ff;
     margin-right: auto;
     color: #004085;
+    border: 1px solid #004085;
 }
 
 .message-receiver {
     background-color: #d4edda;
     margin-left: auto;
     color: #155724;
+    border: 1px solid #155724;
+}
+
+/* Поле ввода сообщений */
+.chat-input {
+    display: flex;
+    padding: 10px;
+    background-color: #f7f9fb;
+    border-top: 1px solid #ccc;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.chat-input button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.chat-input button:hover {
+    background-color: #45a049;
 }

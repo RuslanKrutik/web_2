@@ -30,6 +30,10 @@ def db_close(conn, cur):
 def welcome():
     return render_template('RGZ/welcome.html')
 
+@RGZ.route('/confirmation/')
+def confirmation():
+    return render_template('RGZ/confirmation.html')
+
 @RGZ.route('/users/')
 def users():
     """
@@ -118,7 +122,7 @@ def login_user(params, rpc_id):
 
 def get_users(params, rpc_id):
     """
-    Получение списка пользователей.
+    Получение списка пользователей, исключая самого пользователя.
     """
     token = params.get('token')
 
@@ -127,7 +131,7 @@ def get_users(params, rpc_id):
         return error_response(rpc_id, 4, 'Unauthorized.')
 
     conn, cur = db_connect()
-    cur.execute("SELECT id, username FROM user")
+    cur.execute("SELECT id, username FROM user WHERE id != ?", (user_id,))
     users = [{"id": row["id"], "username": row["username"]} for row in cur.fetchall()]
     db_close(conn, cur)
 

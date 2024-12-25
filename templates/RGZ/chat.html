@@ -39,6 +39,13 @@ function loadMessages() {
             messages.forEach(message => {
                 const li = document.createElement('li');
                 li.innerText = `${message.sender_id === parseInt(sessionStorage.getItem('chatWith')) ? 'Собеседник' : 'Вы'}: ${message.text}`;
+
+                // Добавление кнопки удаления
+                const deleteButton = document.createElement('button');
+                deleteButton.innerText = 'Удалить';
+                deleteButton.onclick = () => deleteMessage(message.id, message.sender_id !== parseInt(sessionStorage.getItem('chatWith')));
+                li.appendChild(deleteButton);
+
                 ul.appendChild(li);
             });
         }
@@ -75,6 +82,38 @@ function sendMessage() {
             alert(`Ошибка отправки сообщения: ${data.error.message}`);
         } else {
             document.getElementById('message-input').value = '';
+            loadMessages();
+        }
+    });
+}
+
+// Функция удаления сообщения
+function deleteMessage(messageId, forSender) {
+    const url = '/json-rpc-api/';
+    const token = sessionStorage.getItem('token');
+
+    if (!token || !messageId) {
+        alert('Ошибка удаления сообщения.');
+        return;
+    }
+
+    const json = {
+        'jsonrpc': '2.0',
+        'method': 'delete_message',
+        'params': { 'token': token, 'message_id': messageId, 'for_sender': forSender },
+        'id': Math.round(Math.random() * 1000)
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(json)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(`Ошибка удаления сообщения: ${data.error.message}`);
+        } else {
             loadMessages();
         }
     });

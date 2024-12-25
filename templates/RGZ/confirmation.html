@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block lab %} Подтверждение {% endblock %}
+
+{% block script %}
+<script>
+function goToUsers() {
+    window.location.href = '/users/';
+}
+</script>
+{% endblock %}
+
+{% block main %}
+<h1>Операция успешна!</h1>
+<p>Вы успешно зарегистрировались или вошли в систему.</p>
+<button onclick="goToUsers()">Перейти к списку пользователей</button>
+{% endblock %}

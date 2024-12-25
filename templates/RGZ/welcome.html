@@ -27,12 +27,12 @@ function registerUser() {
         if (data.error) {
             alert(`Ошибка регистрации: ${data.error.message}`);
         } else {
-            alert('Регистрация успешна!');
+            sessionStorage.setItem('token', data.result.token);
+            window.location.href = '/confirmation/';
         }
     });
 }
 
-// Функция авторизации пользователя
 function loginUser() {
     const url = '/json-rpc-api/';
     const username = document.getElementById('login-username').value;
@@ -55,9 +55,8 @@ function loginUser() {
         if (data.error) {
             alert(`Ошибка авторизации: ${data.error.message}`);
         } else {
-            alert('Авторизация успешна!');
             sessionStorage.setItem('token', data.result.token);
-            window.location.href = '/users/'; // Перенаправление на страницу списка пользователей
+            window.location.href = '/confirmation/';
         }
     });
 }

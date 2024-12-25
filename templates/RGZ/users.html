@@ -1,8 +1,8 @@
-{% extends "base.html" %}
+{% extends "chat_base.html" %}
 
-{% block lab %} Список пользователей {% endblock %}
+{% block lab %}Список пользователей{% endblock %}
 
-{% block script %}
+{% block user_list %}
 <script>
 function loadUsers() {
     const url = '/json-rpc-api/';
@@ -31,111 +31,22 @@ function loadUsers() {
             alert(`Ошибка загрузки пользователей: ${data.error.message}`);
         } else {
             const usersList = data.result.users;
-            const ul = document.getElementById('user-list');
-            ul.innerHTML = '';
+            const userListContainer = document.getElementById('user-list');
+            userListContainer.innerHTML = ''; // Очистка списка
 
             usersList.forEach(user => {
                 const li = document.createElement('li');
-                li.innerText = user.username;
-
-                const chatButton = document.createElement('button');
-                chatButton.innerText = 'Чат';
-                chatButton.onclick = () => {
+                li.innerHTML = `<div class="user-icon">${user.username[0]}</div>${user.username}`;
+                li.onclick = () => {
                     sessionStorage.setItem('chatWith', user.id);
                     window.location.href = '/chat/';
                 };
-
-                li.appendChild(chatButton);
-
-                // Кнопки редактирования и удаления для администратора
-                if (isAdmin()) {
-                    const editButton = document.createElement('button');
-                    editButton.innerText = 'Редактировать';
-                    editButton.onclick = () => editUser(user.id);
-
-                    const deleteButton = document.createElement('button');
-                    deleteButton.innerText = 'Удалить';
-                    deleteButton.onclick = () => deleteUser(user.id);
-
-                    li.appendChild(editButton);
-                    li.appendChild(deleteButton);
-                }
-
-                ul.appendChild(li);
+                userListContainer.appendChild(li);
             });
         }
     });
 }
 
-function isAdmin() {
-    return sessionStorage.getItem('isAdmin') === 'true';
-}
-
-function editUser(userId) {
-    const newUsername = prompt('Введите новое имя пользователя:');
-    const newPassword = prompt('Введите новый пароль (оставьте пустым, чтобы не изменять):');
-    const url = '/json-rpc-api/';
-    const token = sessionStorage.getItem('token');
-
-    const json = {
-        'jsonrpc': '2.0',
-        'method': 'edit_user',
-        'params': { 'token': token, 'user_id': userId, 'username': newUsername, 'password': newPassword },
-        'id': Math.round(Math.random() * 1000)
-    };
-
-    fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(json)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            alert(`Ошибка редактирования пользователя: ${data.error.message}`);
-        } else {
-            alert('Пользователь успешно отредактирован.');
-            loadUsers();
-        }
-    });
-}
-
-function deleteUser(userId) {
-    if (!confirm('Вы уверены, что хотите удалить пользователя?')) return;
-
-    const url = '/json-rpc-api/';
-    const token = sessionStorage.getItem('token');
-
-    const json = {
-        'jsonrpc': '2.0',
-        'method': 'delete_user',
-        'params': { 'token': token, 'user_id': userId },
-        'id': Math.round(Math.random() * 1000)
-    };
-
-    fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(json)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            alert(`Ошибка удаления пользователя: ${data.error.message}`);
-        } else {
-            alert('Пользователь успешно удалён.');
-            loadUsers();
-        }
-    });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    loadUsers();
-});
+document.addEventListener('DOMContentLoaded', loadUsers);
 </script>
-{% endblock %}
-
-{% block main %}
-<h1>Список пользователей</h1>
-<ul id="user-list"></ul>
 {% endblock %}

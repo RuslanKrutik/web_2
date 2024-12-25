@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block lab %}Мессенджер{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='chat_style.css') }}">
+    {% block script %}{% endblock %}
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Список пользователей -->
+        <div class="sidebar">
+            <h2>Список чатов</h2>
+            <ul id="user-list" class="user-list">
+                {% block user_list %}{% endblock %}
+            </ul>
+        </div>
+
+        <!-- Окно чата -->
+        <div class="chat-window">
+            <div class="chat-header">
+                <h2 id="chat-title">Чат</h2>
+            </div>
+            <div id="message-list" class="message-list">
+                {% block message_list %}{% endblock %}
+            </div>
+            <div class="chat-input">
+                <input type="text" id="message-input" placeholder="Введите сообщение">
+                <button onclick="sendMessage()">Отправить</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

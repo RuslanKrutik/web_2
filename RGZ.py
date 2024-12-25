@@ -42,6 +42,17 @@ def users():
 def chat():
     return render_template('RGZ/chat.html')
 
+@RGZ.route('/admin/')
+def admin():
+    # Проверка, что текущий пользователь — администратор
+    token = request.cookies.get('token')  # Или способ проверки токена
+    user_id = validate_session(token)
+
+    if not user_id or not is_admin(user_id):
+        return "Доступ запрещен", 403
+
+    return render_template('RGZ/admin.html')
+
 @RGZ.route('/json-rpc-api/', methods=['POST'])
 def json_rpc_api():
     """
@@ -51,6 +62,7 @@ def json_rpc_api():
     method = data.get('method')
     params = data.get('params', {})
     rpc_id = data.get('id')
+
 
     if method == 'register_user':
         return register_user(params, rpc_id)
@@ -68,8 +80,13 @@ def json_rpc_api():
         return logout_user(params, rpc_id)
     elif method == 'get_user_info':
         return get_user_info(params, rpc_id)
+    elif method == 'edit_user':
+        return edit_user(params, rpc_id)
+    elif method == 'delete_user':
+        return delete_user(params, rpc_id)
     else:
         return error_response(rpc_id, -32601, 'Method not found')
+    
 
 # Методы API
 def register_user(params, rpc_id):
@@ -258,3 +275,64 @@ def error_response(rpc_id, code, message):
         },
         'id': rpc_id
     }
+def is_admin(user_id):
+    """
+    Проверяет, является ли пользователь администратором.
+    """
+    conn, cur = db_connect()
+    cur.execute("SELECT username FROM user WHERE id = ?", (user_id,))
+    user = cur.fetchone()
+    db_close(conn, cur)
+    return user and user["username"] == "admin"
+
+def edit_user(params, rpc_id):
+    """
+    Редактирование учетной записи пользователя (только для администратора).
+    """
+    token = params.get('token')
+    user_id = params.get('user_id')
+    new_username = params.get('username')
+    new_password = params.get('password')
+
+    admin_id = validate_session(token)
+    if not admin_id or not is_admin(admin_id):
+        return error_response(rpc_id, 4, 'Unauthorized.')
+
+    if not user_id or not new_username:
+        return error_response(rpc_id, 1, 'User ID and new username are required.')
+
+    conn, cur = db_connect()
+    cur.execute("SELECT id FROM user WHERE id = ?", (user_id,))
+    if not cur.fetchone():
+        db_close(conn, cur)
+        return error_response(rpc_id, 2, 'User not found.')
+
+    password_hash = generate_password_hash(new_password) if new_password else None
+    if password_hash:
+        cur.execute("UPDATE user SET username = ?, password_hash = ? WHERE id = ?", (new_username, password_hash, user_id))
+    else:
+        cur.execute("UPDATE user SET username = ? WHERE id = ?", (new_username, user_id))
+    db_close(conn, cur)
+
+    return success_response(rpc_id, 'User updated successfully.')
+
+def delete_user(params, rpc_id):
+    """
+    Удаление учетной записи пользователя (только для администратора).
+    """
+    token = params.get('token')
+    user_id = params.get('user_id')
+
+    admin_id = validate_session(token)
+    if not admin_id or not is_admin(admin_id):
+        return error_response(rpc_id, 4, 'Unauthorized.')
+
+    if not user_id:
+        return error_response(rpc_id, 1, 'User ID is required.')
+
+    conn, cur = db_connect()
+    cur.execute("DELETE FROM user WHERE id = ?", (user_id,))
+    cur.execute("DELETE FROM session WHERE user_id = ?", (user_id,))
+    db_close(conn, cur)
+
+    return success_response(rpc_id, 'User deleted successfully.')

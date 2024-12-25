@@ -2,8 +2,6 @@ from flask import Blueprint, request, render_template
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 from os import path
-#from werkzeug.security import generate_password_hash
-#print(generate_password_hash("Win20win20")) 
 
 RGZ = Blueprint('RGZ', __name__)
 
@@ -38,16 +36,10 @@ def confirmation():
 
 @RGZ.route('/users/')
 def users():
-    """
-    Маршрут для отображения списка пользователей.
-    """
     return render_template('RGZ/users.html')
 
 @RGZ.route('/chat/')
 def chat():
-    """
-    Маршрут для отображения чата.
-    """
     return render_template('RGZ/chat.html')
 
 @RGZ.route('/json-rpc-api/', methods=['POST'])
@@ -72,14 +64,15 @@ def json_rpc_api():
         return get_messages(params, rpc_id)
     elif method == 'delete_message':
         return delete_message(params, rpc_id)
+    elif method == 'logout_user':
+        return logout_user(params, rpc_id)
+    elif method == 'get_user_info':
+        return get_user_info(params, rpc_id)
     else:
         return error_response(rpc_id, -32601, 'Method not found')
 
 # Методы API
 def register_user(params, rpc_id):
-    """
-    Регистрация пользователя.
-    """
     username = params.get('username')
     password = params.get('password')
 
@@ -99,9 +92,6 @@ def register_user(params, rpc_id):
     return success_response(rpc_id, 'User registered successfully.')
 
 def login_user(params, rpc_id):
-    """
-    Авторизация пользователя.
-    """
     username = params.get('username')
     password = params.get('password')
 
@@ -123,9 +113,6 @@ def login_user(params, rpc_id):
     return success_response(rpc_id, {'token': session_token})
 
 def get_users(params, rpc_id):
-    """
-    Получение списка пользователей, исключая самого пользователя.
-    """
     token = params.get('token')
 
     user_id = validate_session(token)
@@ -140,9 +127,6 @@ def get_users(params, rpc_id):
     return success_response(rpc_id, {'users': users})
 
 def send_message(params, rpc_id):
-    """
-    Отправка сообщения.
-    """
     token = params.get('token')
     receiver_id = params.get('receiver_id')
     text = params.get('text')
@@ -164,9 +148,6 @@ def send_message(params, rpc_id):
     return success_response(rpc_id, 'Message sent successfully.')
 
 def get_messages(params, rpc_id):
-    """
-    Получение сообщений.
-    """
     token = params.get('token')
     chat_with = params.get('chat_with')
 
@@ -201,12 +182,8 @@ def get_messages(params, rpc_id):
     return success_response(rpc_id, {'messages': messages})
 
 def delete_message(params, rpc_id):
-    """
-    Удаление сообщения.
-    """
     token = params.get('token')
     message_id = params.get('message_id')
-    for_sender = params.get('for_sender', False)
 
     user_id = validate_session(token)
     if not user_id:
@@ -216,25 +193,49 @@ def delete_message(params, rpc_id):
         return error_response(rpc_id, 1, 'Message ID is required.')
 
     conn, cur = db_connect()
-    if for_sender:
-        cur.execute(
-            "UPDATE message SET is_deleted_sender = 1 WHERE id = ? AND sender_id = ?",
-            (message_id, user_id)
-        )
-    else:
-        cur.execute(
-            "UPDATE message SET is_deleted_receiver = 1 WHERE id = ? AND receiver_id = ?",
-            (message_id, user_id)
-        )
+    cur.execute(
+        """
+        UPDATE message
+        SET is_deleted_sender = CASE WHEN sender_id = ? THEN 1 ELSE is_deleted_sender END,
+            is_deleted_receiver = CASE WHEN receiver_id = ? THEN 1 ELSE is_deleted_receiver END
+        WHERE id = ?
+        """, (user_id, user_id, message_id)
+    )
     db_close(conn, cur)
 
     return success_response(rpc_id, 'Message deleted successfully.')
 
+def logout_user(params, rpc_id):
+    token = params.get('token')
+
+    if not token:
+        return error_response(rpc_id, 1, 'Token is required.')
+
+    conn, cur = db_connect()
+    cur.execute("DELETE FROM session WHERE token = ?", (token,))
+    db_close(conn, cur)
+
+    return success_response(rpc_id, 'Logout successful.')
+
+def get_user_info(params, rpc_id):
+    token = params.get('token')
+
+    user_id = validate_session(token)
+    if not user_id:
+        return error_response(rpc_id, 4, 'Unauthorized.')
+
+    conn, cur = db_connect()
+    cur.execute("SELECT id, username FROM user WHERE id = ?", (user_id,))
+    user = cur.fetchone()
+    db_close(conn, cur)
+
+    if not user:
+        return error_response(rpc_id, 3, 'User not found.')
+
+    return success_response(rpc_id, {'id': user["id"], 'username': user["username"]})
+
 # Вспомогательные функции
 def validate_session(token):
-    """
-    Проверяет валидность сессии.
-    """
     conn, cur = db_connect()
     cur.execute("SELECT user_id FROM session WHERE token = ?", (token,))
     session = cur.fetchone()
@@ -242,9 +243,6 @@ def validate_session(token):
     return session["user_id"] if session else None
 
 def success_response(rpc_id, result):
-    """
-    Формирует успешный ответ JSON-RPC.
-    """
     return {
         'jsonrpc': '2.0',
         'result': result,
@@ -252,9 +250,6 @@ def success_response(rpc_id, result):
     }
 
 def error_response(rpc_id, code, message):
-    """
-    Формирует ошибочный ответ JSON-RPC.
-    """
     return {
         'jsonrpc': '2.0',
         'error': {
@@ -263,44 +258,3 @@ def error_response(rpc_id, code, message):
         },
         'id': rpc_id
     }
-    
-def is_admin(user_id):
-    """
-    Проверяет, является ли пользователь администратором.
-    """
-    conn, cur = db_connect()
-    cur.execute("SELECT username FROM user WHERE id = ?", (user_id,))
-    user = cur.fetchone()
-    db_close(conn, cur)
-    return user and user["username"] == "admin"
-
-def edit_user(params, rpc_id):
-    """
-    Редактирование пользователя (только для администратора).
-    """
-    token = params.get('token')
-    user_id = params.get('user_id')
-    new_username = params.get('username')
-    new_password = params.get('password')
-
-    admin_id = validate_session(token)
-    if not admin_id or not is_admin(admin_id):
-        return error_response(rpc_id, 4, 'Unauthorized.')
-
-    if not user_id or not new_username:
-        return error_response(rpc_id, 1, 'User ID and new username are required.')
-
-    conn, cur = db_connect()
-    cur.execute("SELECT id FROM user WHERE id = ?", (user_id,))
-    if not cur.fetchone():
-        db_close(conn, cur)
-        return error_response(rpc_id, 2, 'User not found.')
-
-    password_hash = generate_password_hash(new_password) if new_password else None
-    if password_hash:
-        cur.execute("UPDATE user SET username = ?, password_hash = ? WHERE id = ?", (new_username, password_hash, user_id))
-    else:
-        cur.execute("UPDATE user SET username = ? WHERE id = ?", (new_username, user_id))
-    db_close(conn, cur)
-
-    return success_response(rpc_id, 'User updated successfully.')

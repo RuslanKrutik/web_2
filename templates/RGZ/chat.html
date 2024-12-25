@@ -82,7 +82,7 @@ function loadMessages() {
         } else {
             const messages = data.result.messages;
             const messageList = document.getElementById('message-list');
-            messageList.innerHTML = ''; // Очистка списка
+            messageList.innerHTML = '';
 
             messages.forEach(message => {
                 const div = document.createElement('div');
@@ -92,9 +92,49 @@ function loadMessages() {
                 } else {
                     div.classList.add('message-receiver');
                 }
-                div.innerText = message.text;
+
+                const text = document.createElement('span');
+                text.innerText = message.text;
+                div.appendChild(text);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.innerText = 'Удалить';
+                deleteButton.onclick = () => deleteMessage(message.id);
+                div.appendChild(deleteButton);
+
                 messageList.appendChild(div);
             });
+        }
+    });
+}
+
+function deleteMessage(messageId) {
+    const url = '/json-rpc-api/';
+    const token = sessionStorage.getItem('token');
+
+    if (!token || !messageId) {
+        alert('Ошибка удаления сообщения.');
+        return;
+    }
+
+    const json = {
+        'jsonrpc': '2.0',
+        'method': 'delete_message',
+        'params': { 'token': token, 'message_id': messageId },
+        'id': Math.round(Math.random() * 1000)
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(json)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(`Ошибка удаления сообщения: ${data.error.message}`);
+        } else {
+            loadMessages();
         }
     });
 }
@@ -145,5 +185,21 @@ document.addEventListener('DOMContentLoaded', () => {
         loadMessages();
     }
 });
+</script>
+{% endblock %}
+
+{% block chat_menu %}
+<div class="dropdown">
+    <button class="dropdown-button">Меню</button>
+    <div class="dropdown-content">
+        <p>Профиль: {{ session.get('username', 'Гость') }}</p>
+        <button onclick="logout()">Выйти</button>
+    </div>
+</div>
+<script>
+function logout() {
+    sessionStorage.clear();
+    window.location.href = '/welcome/';
+}
 </script>
 {% endblock %}

@@ -1,35 +1,34 @@
-from flask import Blueprint, request, session, jsonify
+from flask import Blueprint, request, render_template
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+import sqlite3
+from os import path
 
 RGZ = Blueprint('RGZ', __name__)
 
-# Инициализация базы данных
-db = SQLAlchemy()
+# Функции для работы с БД
+def db_connect():
+    """
+    Подключение к базе данных SQLite.
+    """
+    dir_path = path.dirname(path.realpath(__file__))
+    db_path = path.join(dir_path, "messenger.db")
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+    return conn, cur
 
-# Модели базы данных
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
-
-class Session(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    token = db.Column(db.String(256), unique=True, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+def db_close(conn, cur):
+    """
+    Закрытие подключения к базе данных.
+    """
+    conn.commit()
+    cur.close()
+    conn.close()
 
 # Роуты
 @RGZ.route('/welcome/')
 def welcome():
-    """
-    Приветственная страница.
-    """
-    return {
-        'message': 'Welcome to the Messenger API. Please register or login.',
-        'instructions': 'Use /json-rpc-api/ endpoint for API calls.'
-    }
+    return render_template('welcome.html')
 
 @RGZ.route('/json-rpc-api/', methods=['POST'])
 def json_rpc_api():
@@ -48,16 +47,9 @@ def json_rpc_api():
     elif method == 'get_users':
         return get_users(params, rpc_id)
     else:
-        return {
-            'jsonrpc': '2.0',
-            'error': {
-                'code': -32601,
-                'message': 'Method not found'
-            },
-            'id': rpc_id
-        }
+        return error_response(rpc_id, -32601, 'Method not found')
 
-# Функции API
+# Методы API
 def register_user(params, rpc_id):
     """
     Регистрация пользователя.
@@ -68,13 +60,15 @@ def register_user(params, rpc_id):
     if not username or not password:
         return error_response(rpc_id, 1, 'Username and password are required.')
 
-    if User.query.filter_by(username=username).first():
+    conn, cur = db_connect()
+    cur.execute("SELECT id FROM user WHERE username = ?", (username,))
+    if cur.fetchone():
+        db_close(conn, cur)
         return error_response(rpc_id, 2, 'Username already exists.')
 
     password_hash = generate_password_hash(password)
-    new_user = User(username=username, password_hash=password_hash)
-    db.session.add(new_user)
-    db.session.commit()
+    cur.execute("INSERT INTO user (username, password_hash) VALUES (?, ?)", (username, password_hash))
+    db_close(conn, cur)
 
     return success_response(rpc_id, 'User registered successfully.')
 
@@ -88,14 +82,17 @@ def login_user(params, rpc_id):
     if not username or not password:
         return error_response(rpc_id, 1, 'Username and password are required.')
 
-    user = User.query.filter_by(username=username).first()
-    if not user or not check_password_hash(user.password_hash, password):
+    conn, cur = db_connect()
+    cur.execute("SELECT id, password_hash FROM user WHERE username = ?", (username,))
+    user = cur.fetchone()
+
+    if not user or not check_password_hash(user["password_hash"], password):
+        db_close(conn, cur)
         return error_response(rpc_id, 3, 'Invalid username or password.')
 
-    session_token = generate_password_hash(f"{username}{datetime.utcnow()}")
-    new_session = Session(token=session_token, user_id=user.id)
-    db.session.add(new_session)
-    db.session.commit()
+    session_token = generate_password_hash(f"{username}")
+    cur.execute("INSERT INTO session (token, user_id) VALUES (?, ?)", (session_token, user["id"]))
+    db_close(conn, cur)
 
     return success_response(rpc_id, {'token': session_token})
 
@@ -108,17 +105,23 @@ def get_users(params, rpc_id):
     if not token or not validate_session(token):
         return error_response(rpc_id, 4, 'Unauthorized.')
 
-    users = User.query.all()
-    user_list = [{"id": user.id, "username": user.username} for user in users]
-    return success_response(rpc_id, {'users': user_list})
+    conn, cur = db_connect()
+    cur.execute("SELECT id, username FROM user")
+    users = [{"id": row["id"], "username": row["username"]} for row in cur.fetchall()]
+    db_close(conn, cur)
+
+    return success_response(rpc_id, {'users': users})
 
 # Вспомогательные функции
 def validate_session(token):
     """
     Проверяет валидность сессии.
     """
-    session = Session.query.filter_by(token=token).first()
-    return session is not None
+    conn, cur = db_connect()
+    cur.execute("SELECT id FROM session WHERE token = ?", (token,))
+    session_exists = cur.fetchone() is not None
+    db_close(conn, cur)
+    return session_exists
 
 def success_response(rpc_id, result):
     """

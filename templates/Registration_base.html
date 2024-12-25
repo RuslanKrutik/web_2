@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block lab %}Мессенджер{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='Registration_styles.css') }}">
+    {% block script %}{% endblock %}
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="{{ url_for('static', filename='images/messenger_icon.png') }}" alt="Мессенджер" class="icon">
+            <h1>Мессенджер</h1>
+        </div>
+        <div class="main-content">
+            {% block main %}{% endblock %}
+        </div>
+    </div>
+</body>
+</html>

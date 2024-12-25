@@ -1,39 +1,75 @@
-{% extends "base.html" %}
+{% extends "Registration_base.html" %}
 
 {% block lab %} Мессенджер {% endblock %}
 
+{% block main %}
+<div>
+    <h2>Добро пожаловать!</h2>
+    <div>
+        <button class="large-button" onclick="showRegistration()">Зарегистрироваться</button>
+        <button class="large-button" onclick="showLogin()">Войти</button>
+    </div>
+</div>
+
+<div id="auth-forms" style="display: none;">
+    <h2 id="auth-title"></h2>
+    <form>
+        <label for="username">Имя пользователя:</label>
+        <input type="text" id="username" required>
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" required>
+        <button type="button" id="auth-button"></button>
+    </form>
+</div>
+{% endblock %}
+
 {% block script %}
 <script>
-    function registerUser() {
-        const url = '/json-rpc-api/';
-        const username = document.getElementById('reg-username').value;
-        const password = document.getElementById('reg-password').value;
-    
-        const json = {
-            'jsonrpc': '2.0',
-            'method': 'register_user',
-            'params': { 'username': username, 'password': password },
-            'id': Math.round(Math.random() * 1000)
-        };
-    
-        fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(json)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                alert(`Ошибка регистрации: ${data.error.message}`);
-            } else {
-                window.location.href = '/confirmation/';
-            }
-        });
-    }
+function showRegistration() {
+    document.getElementById('auth-forms').style.display = 'block';
+    document.getElementById('auth-title').textContent = 'Регистрация';
+    document.getElementById('auth-button').textContent = 'Зарегистрироваться';
+    document.getElementById('auth-button').onclick = registerUser;
+}
+
+function showLogin() {
+    document.getElementById('auth-forms').style.display = 'block';
+    document.getElementById('auth-title').textContent = 'Вход';
+    document.getElementById('auth-button').textContent = 'Войти';
+    document.getElementById('auth-button').onclick = loginUser;
+}
+
+function registerUser() {
+    const url = '/json-rpc-api/';
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    const json = {
+        'jsonrpc': '2.0',
+        'method': 'register_user',
+        'params': { 'username': username, 'password': password },
+        'id': Math.round(Math.random() * 1000)
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(json)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(`Ошибка регистрации: ${data.error.message}`);
+        } else {
+            window.location.href = '/confirmation/';
+        }
+    });
+}
+
 function loginUser() {
     const url = '/json-rpc-api/';
-    const username = document.getElementById('login-username').value;
-    const password = document.getElementById('login-password').value;
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
 
     const json = {
         'jsonrpc': '2.0',
@@ -58,26 +94,4 @@ function loginUser() {
     });
 }
 </script>
-{% endblock %}
-
-{% block main %}
-<h1>Добро пожаловать в Мессенджер!</h1>
-
-<div>
-    <h2>Авторизация</h2>
-    <label for="login-username">Имя пользователя:</label>
-    <input type="text" id="login-username" />
-    <label for="login-password">Пароль:</label>
-    <input type="password" id="login-password" />
-    <button onclick="loginUser()">Войти</button>
-</div>
-
-<div>
-    <h2>Регистрация</h2>
-    <label for="reg-username">Имя пользователя:</label>
-    <input type="text" id="reg-username" />
-    <label for="reg-password">Пароль:</label>
-    <input type="password" id="reg-password" />
-    <button onclick="registerUser()">Зарегистрироваться</button>
-</div>
 {% endblock %}

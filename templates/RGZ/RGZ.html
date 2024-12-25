@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block lab %} Мессенджер {% endblock %}
+
+{% block script %}
+<script>
+// Функция регистрации пользователя
+function registerUser() {
+    const url = '/json-rpc-api/';
+    const username = document.getElementById('reg-username').value;
+    const password = document.getElementById('reg-password').value;
+
+    const json = {
+        'jsonrpc': '2.0',
+        'method': 'register_user',
+        'params': { 'username': username, 'password': password },
+        'id': Math.round(Math.random() * 1000)
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(json)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(`Ошибка регистрации: ${data.error.message}`);
+        } else {
+            alert('Регистрация успешна!');
+        }
+    });
+}
+
+// Функция авторизации пользователя
+function loginUser() {
+    const url = '/json-rpc-api/';
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
+
+    const json = {
+        'jsonrpc': '2.0',
+        'method': 'login_user',
+        'params': { 'username': username, 'password': password },
+        'id': Math.round(Math.random() * 1000)
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(json)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(`Ошибка авторизации: ${data.error.message}`);
+        } else {
+            alert('Авторизация успешна!');
+            sessionStorage.setItem('token', data.result.token);
+            getUsers(); // Загрузка списка пользователей после авторизации
+        }
+    });
+}
+
+// Функция получения списка пользователей
+function getUsers() {
+    const url = '/json-rpc-api/';
+    const token = sessionStorage.getItem('token');
+
+    if (!token) {
+        alert('Вы не авторизованы.');
+        return;
+    }
+
+    const json = {
+        'jsonrpc': '2.0',
+        'method': 'get_users',
+        'params': { 'token': token },
+        'id': Math.round(Math.random() * 1000)
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(json)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(`Ошибка загрузки пользователей: ${data.error.message}`);
+        } else {
+            const usersList = data.result.users;
+            const ul = document.getElementById('user-list');
+            ul.innerHTML = ''; // Очистка списка перед добавлением
+
+            usersList.forEach(user => {
+                const li = document.createElement('li');
+                li.innerText = user.username;
+                ul.appendChild(li);
+            });
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Проверка авторизации при загрузке страницы
+    const token = sessionStorage.getItem('token');
+    if (token) {
+        getUsers();
+    }
+});
+</script>
+{% endblock %}
+
+{% block main %}
+
+<h1>Добро пожаловать в Мессенджер!</h1>
+
+<div>
+    <h2>Регистрация</h2>
+    <label for="reg-username">Имя пользователя:</label>
+    <input type="text" id="reg-username" />
+    <label for="reg-password">Пароль:</label>
+    <input type="password" id="reg-password" />
+    <button onclick="registerUser()">Зарегистрироваться</button>
+</div>
+
+<div>
+    <h2>Авторизация</h2>
+    <label for="login-username">Имя пользователя:</label>
+    <input type="text" id="login-username" />
+    <label for="login-password">Пароль:</label>
+    <input type="password" id="login-password" />
+    <button onclick="loginUser()">Войти</button>
+</div>
+
+<div>
+    <h2>Список пользователей</h2>
+    <ul id="user-list"></ul>
+</div>
+
+{% endblock %}

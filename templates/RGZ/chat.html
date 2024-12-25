@@ -2,27 +2,7 @@
 
 {% block lab %}Чат{% endblock %}
 
-{% block chat_window %}
-<div class="chat-container">
-    <!-- Список пользователей -->
-    <div class="sidebar">
-        <h2>Собеседники</h2>
-        <ul id="user-list" class="user-list"></ul>
-    </div>
-
-    <!-- Окно чата -->
-    <div class="chat-window">
-        <div class="chat-header">
-            <h3 id="chat-with">Выберите собеседника</h3>
-        </div>
-        <div id="message-list" class="message-list"></div>
-        <div class="chat-input">
-            <input type="text" id="message-input" placeholder="Введите сообщение" />
-            <button onclick="sendMessage()">Отправить</button>
-        </div>
-    </div>
-</div>
-
+{% block user_list %}
 <script>
 function loadUsers() {
     const url = '/json-rpc-api/';
@@ -52,7 +32,7 @@ function loadUsers() {
         } else {
             const usersList = data.result.users;
             const userListContainer = document.getElementById('user-list');
-            userListContainer.innerHTML = '';
+            userListContainer.innerHTML = ''; // Очистка списка
 
             usersList.forEach(user => {
                 const li = document.createElement('li');
@@ -60,15 +40,19 @@ function loadUsers() {
                 li.onclick = () => {
                     sessionStorage.setItem('chatWith', user.id);
                     sessionStorage.setItem('chatWithName', user.username);
+                    document.getElementById('chat-title').textContent = user.username;
                     loadMessages();
-                    document.getElementById('chat-with').textContent = user.username;
                 };
                 userListContainer.appendChild(li);
             });
         }
     });
 }
+</script>
+{% endblock %}
 
+{% block message_list %}
+<script>
 function loadMessages() {
     const url = '/json-rpc-api/';
     const token = sessionStorage.getItem('token');
@@ -98,7 +82,7 @@ function loadMessages() {
         } else {
             const messages = data.result.messages;
             const messageList = document.getElementById('message-list');
-            messageList.innerHTML = '';
+            messageList.innerHTML = ''; // Очистка списка
 
             messages.forEach(message => {
                 const div = document.createElement('div');
@@ -114,7 +98,11 @@ function loadMessages() {
         }
     });
 }
+</script>
+{% endblock %}
 
+{% block script %}
+<script>
 function sendMessage() {
     const url = '/json-rpc-api/';
     const token = sessionStorage.getItem('token');
@@ -153,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadUsers();
     const chatWithName = sessionStorage.getItem('chatWithName');
     if (chatWithName) {
-        document.getElementById('chat-with').textContent = chatWithName;
+        document.getElementById('chat-title').textContent = chatWithName;
         loadMessages();
     }
 });

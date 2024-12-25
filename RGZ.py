@@ -30,6 +30,20 @@ def db_close(conn, cur):
 def welcome():
     return render_template('RGZ/welcome.html')
 
+@RGZ.route('/users/')
+def users():
+    """
+    Маршрут для отображения списка пользователей.
+    """
+    return render_template('RGZ/users.html')
+
+@RGZ.route('/chat/')
+def chat():
+    """
+    Маршрут для отображения чата.
+    """
+    return render_template('RGZ/chat.html')
+
 @RGZ.route('/json-rpc-api/', methods=['POST'])
 def json_rpc_api():
     """
@@ -46,6 +60,12 @@ def json_rpc_api():
         return login_user(params, rpc_id)
     elif method == 'get_users':
         return get_users(params, rpc_id)
+    elif method == 'send_message':
+        return send_message(params, rpc_id)
+    elif method == 'get_messages':
+        return get_messages(params, rpc_id)
+    elif method == 'delete_message':
+        return delete_message(params, rpc_id)
     else:
         return error_response(rpc_id, -32601, 'Method not found')
 
@@ -102,7 +122,8 @@ def get_users(params, rpc_id):
     """
     token = params.get('token')
 
-    if not token or not validate_session(token):
+    user_id = validate_session(token)
+    if not user_id:
         return error_response(rpc_id, 4, 'Unauthorized.')
 
     conn, cur = db_connect()
@@ -112,16 +133,107 @@ def get_users(params, rpc_id):
 
     return success_response(rpc_id, {'users': users})
 
+def send_message(params, rpc_id):
+    """
+    Отправка сообщения.
+    """
+    token = params.get('token')
+    receiver_id = params.get('receiver_id')
+    text = params.get('text')
+
+    user_id = validate_session(token)
+    if not user_id:
+        return error_response(rpc_id, 4, 'Unauthorized.')
+
+    if not receiver_id or not text:
+        return error_response(rpc_id, 1, 'Receiver ID and text are required.')
+
+    conn, cur = db_connect()
+    cur.execute(
+        "INSERT INTO message (sender_id, receiver_id, text) VALUES (?, ?, ?)",
+        (user_id, receiver_id, text)
+    )
+    db_close(conn, cur)
+
+    return success_response(rpc_id, 'Message sent successfully.')
+
+def get_messages(params, rpc_id):
+    """
+    Получение сообщений.
+    """
+    token = params.get('token')
+    chat_with = params.get('chat_with')
+
+    user_id = validate_session(token)
+    if not user_id:
+        return error_response(rpc_id, 4, 'Unauthorized.')
+
+    if not chat_with:
+        return error_response(rpc_id, 1, 'Chat partner ID is required.')
+
+    conn, cur = db_connect()
+    cur.execute("""
+        SELECT id, sender_id, receiver_id, text, sent_at
+        FROM message
+        WHERE 
+            ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?))
+            AND ((is_deleted_sender = 0 AND sender_id = ?) OR (is_deleted_receiver = 0 AND receiver_id = ?))
+        ORDER BY sent_at
+    """, (user_id, chat_with, chat_with, user_id, user_id, user_id))
+    messages = [
+        {
+            "id": row["id"],
+            "sender_id": row["sender_id"],
+            "receiver_id": row["receiver_id"],
+            "text": row["text"],
+            "sent_at": row["sent_at"]
+        }
+        for row in cur.fetchall()
+    ]
+    db_close(conn, cur)
+
+    return success_response(rpc_id, {'messages': messages})
+
+def delete_message(params, rpc_id):
+    """
+    Удаление сообщения.
+    """
+    token = params.get('token')
+    message_id = params.get('message_id')
+    for_sender = params.get('for_sender', False)
+
+    user_id = validate_session(token)
+    if not user_id:
+        return error_response(rpc_id, 4, 'Unauthorized.')
+
+    if not message_id:
+        return error_response(rpc_id, 1, 'Message ID is required.')
+
+    conn, cur = db_connect()
+    if for_sender:
+        cur.execute(
+            "UPDATE message SET is_deleted_sender = 1 WHERE id = ? AND sender_id = ?",
+            (message_id, user_id)
+        )
+    else:
+        cur.execute(
+            "UPDATE message SET is_deleted_receiver = 1 WHERE id = ? AND receiver_id = ?",
+            (message_id, user_id)
+        )
+    db_close(conn, cur)
+
+    return success_response(rpc_id, 'Message deleted successfully.')
+
 # Вспомогательные функции
 def validate_session(token):
     """
     Проверяет валидность сессии.
     """
     conn, cur = db_connect()
-    cur.execute("SELECT id FROM session WHERE token = ?", (token,))
-    session_exists = cur.fetchone() is not None
+    cur.execute("SELECT user_id FROM session WHERE token = ?", (token,))
+    session = cur.fetchone()
     db_close(conn, cur)
-    return session_exists
+    return session["user_id"] if session else None
 
 def success_response(rpc_id, result):
     """

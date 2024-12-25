@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block lab %} Список пользователей {% endblock %}
+
+{% block script %}
+<script>
+// Функция загрузки списка пользователей
+function loadUsers() {
+    const url = '/json-rpc-api/';
+    const token = sessionStorage.getItem('token');
+
+    if (!token) {
+        alert('Вы не авторизованы.');
+        return;
+    }
+
+    const json = {
+        'jsonrpc': '2.0',
+        'method': 'get_users',
+        'params': { 'token': token },
+        'id': Math.round(Math.random() * 1000)
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(json)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(`Ошибка загрузки пользователей: ${data.error.message}`);
+        } else {
+            const usersList = data.result.users;
+            const ul = document.getElementById('user-list');
+            ul.innerHTML = ''; // Очистка списка перед добавлением
+
+            usersList.forEach(user => {
+                const li = document.createElement('li');
+                li.innerText = user.username;
+
+                const chatButton = document.createElement('button');
+                chatButton.innerText = 'Чат';
+                chatButton.onclick = () => {
+                    sessionStorage.setItem('chatWith', user.id);
+                    window.location.href = '/chat/';
+                };
+
+                li.appendChild(chatButton);
+                ul.appendChild(li);
+            });
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadUsers();
+});
+</script>
+{% endblock %}
+
+{% block main %}
+<h1>Список пользователей</h1>
+<ul id="user-list"></ul>
+{% endblock %}

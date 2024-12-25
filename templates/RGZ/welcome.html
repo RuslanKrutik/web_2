@@ -57,58 +57,10 @@ function loginUser() {
         } else {
             alert('Авторизация успешна!');
             sessionStorage.setItem('token', data.result.token);
-            getUsers(); // Загрузка списка пользователей после авторизации
+            window.location.href = '/users/'; // Перенаправление на страницу списка пользователей
         }
     });
 }
-
-// Функция получения списка пользователей
-function getUsers() {
-    const url = '/json-rpc-api/';
-    const token = sessionStorage.getItem('token');
-
-    if (!token) {
-        alert('Вы не авторизованы.');
-        return;
-    }
-
-    const json = {
-        'jsonrpc': '2.0',
-        'method': 'get_users',
-        'params': { 'token': token },
-        'id': Math.round(Math.random() * 1000)
-    };
-
-    fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(json)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            alert(`Ошибка загрузки пользователей: ${data.error.message}`);
-        } else {
-            const usersList = data.result.users;
-            const ul = document.getElementById('user-list');
-            ul.innerHTML = ''; // Очистка списка перед добавлением
-
-            usersList.forEach(user => {
-                const li = document.createElement('li');
-                li.innerText = user.username;
-                ul.appendChild(li);
-            });
-        }
-    });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Проверка авторизации при загрузке страницы
-    const token = sessionStorage.getItem('token');
-    if (token) {
-        getUsers();
-    }
-});
 </script>
 {% endblock %}
 
@@ -132,11 +84,6 @@ document.addEventListener('DOMContentLoaded', function() {
     <label for="login-password">Пароль:</label>
     <input type="password" id="login-password" />
     <button onclick="loginUser()">Войти</button>
-</div>
-
-<div>
-    <h2>Список пользователей</h2>
-    <ul id="user-list"></ul>
 </div>
 
 {% endblock %}

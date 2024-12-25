@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block lab %} Чат {% endblock %}
+
+{% block script %}
+<script>
+// Функция загрузки сообщений
+function loadMessages() {
+    const url = '/json-rpc-api/';
+    const token = sessionStorage.getItem('token');
+    const chatWith = sessionStorage.getItem('chatWith');
+
+    if (!token || !chatWith) {
+        alert('Ошибка авторизации или ID чата.');
+        return;
+    }
+
+    const json = {
+        'jsonrpc': '2.0',
+        'method': 'get_messages',
+        'params': { 'token': token, 'chat_with': parseInt(chatWith) },
+        'id': Math.round(Math.random() * 1000)
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(json)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(`Ошибка загрузки сообщений: ${data.error.message}`);
+        } else {
+            const messages = data.result.messages;
+            const ul = document.getElementById('message-list');
+            ul.innerHTML = ''; // Очистка списка перед добавлением
+
+            messages.forEach(message => {
+                const li = document.createElement('li');
+                li.innerText = `${message.sender_id === parseInt(sessionStorage.getItem('chatWith')) ? 'Собеседник' : 'Вы'}: ${message.text}`;
+                ul.appendChild(li);
+            });
+        }
+    });
+}
+
+// Функция отправки сообщения
+function sendMessage() {
+    const url = '/json-rpc-api/';
+    const token = sessionStorage.getItem('token');
+    const chatWith = sessionStorage.getItem('chatWith');
+    const text = document.getElementById('message-input').value;
+
+    if (!token || !chatWith || !text) {
+        alert('Ошибка отправки сообщения.');
+        return;
+    }
+
+    const json = {
+        'jsonrpc': '2.0',
+        'method': 'send_message',
+        'params': { 'token': token, 'receiver_id': parseInt(chatWith), 'text': text },
+        'id': Math.round(Math.random() * 1000)
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(json)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(`Ошибка отправки сообщения: ${data.error.message}`);
+        } else {
+            document.getElementById('message-input').value = '';
+            loadMessages();
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadMessages();
+});
+</script>
+{% endblock %}
+
+{% block main %}
+<h1>Чат</h1>
+<ul id="message-list"></ul>
+<input type="text" id="message-input" placeholder="Введите сообщение" />
+<button onclick="sendMessage()">Отправить</button>
+{% endblock %}

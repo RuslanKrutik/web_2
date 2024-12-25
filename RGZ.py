@@ -28,7 +28,7 @@ def db_close(conn, cur):
 # Роуты
 @RGZ.route('/welcome/')
 def welcome():
-    return render_template('welcome.html')
+    return render_template('RGZ/welcome.html')
 
 @RGZ.route('/json-rpc-api/', methods=['POST'])
 def json_rpc_api():

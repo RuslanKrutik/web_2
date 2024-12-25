@@ -4,36 +4,32 @@
 
 {% block script %}
 <script>
-// Функция регистрации пользователя
-function registerUser() {
-    const url = '/json-rpc-api/';
-    const username = document.getElementById('reg-username').value;
-    const password = document.getElementById('reg-password').value;
-
-    const json = {
-        'jsonrpc': '2.0',
-        'method': 'register_user',
-        'params': { 'username': username, 'password': password },
-        'id': Math.round(Math.random() * 1000)
-    };
-
-    fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(json)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            alert(`Ошибка регистрации: ${data.error.message}`);
-        } else {
-            // Сохраняем токен в sessionStorage
-            sessionStorage.setItem('token', data.result.token);
-            window.location.href = '/confirmation/';
-        }
-    });
-}
-
+    function registerUser() {
+        const url = '/json-rpc-api/';
+        const username = document.getElementById('reg-username').value;
+        const password = document.getElementById('reg-password').value;
+    
+        const json = {
+            'jsonrpc': '2.0',
+            'method': 'register_user',
+            'params': { 'username': username, 'password': password },
+            'id': Math.round(Math.random() * 1000)
+        };
+    
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(json)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(`Ошибка регистрации: ${data.error.message}`);
+            } else {
+                window.location.href = '/confirmation/';
+            }
+        });
+    }
 function loginUser() {
     const url = '/json-rpc-api/';
     const username = document.getElementById('login-username').value;
@@ -57,7 +53,7 @@ function loginUser() {
             alert(`Ошибка авторизации: ${data.error.message}`);
         } else {
             sessionStorage.setItem('token', data.result.token);
-            window.location.href = '/confirmation/';
+            window.location.href = '/users/';
         }
     });
 }
@@ -65,17 +61,7 @@ function loginUser() {
 {% endblock %}
 
 {% block main %}
-
 <h1>Добро пожаловать в Мессенджер!</h1>
-
-<div>
-    <h2>Регистрация</h2>
-    <label for="reg-username">Имя пользователя:</label>
-    <input type="text" id="reg-username" />
-    <label for="reg-password">Пароль:</label>
-    <input type="password" id="reg-password" />
-    <button onclick="registerUser()">Зарегистрироваться</button>
-</div>
 
 <div>
     <h2>Авторизация</h2>
@@ -86,4 +72,12 @@ function loginUser() {
     <button onclick="loginUser()">Войти</button>
 </div>
 
+<div>
+    <h2>Регистрация</h2>
+    <label for="reg-username">Имя пользователя:</label>
+    <input type="text" id="reg-username" />
+    <label for="reg-password">Пароль:</label>
+    <input type="password" id="reg-password" />
+    <button onclick="registerUser()">Зарегистрироваться</button>
+</div>
 {% endblock %}

@@ -4,20 +4,14 @@
 
 {% block script %}
 <script>
-function goToUsers() {
-    const token = sessionStorage.getItem('token');
-    if (!token) {
-        alert('Токен не найден. Пожалуйста, авторизуйтесь снова.');
-        window.location.href = '/welcome/';
-        return;
-    }
-    window.location.href = '/users/';
+function goToWelcome() {
+    window.location.href = '/welcome/';
 }
 </script>
 {% endblock %}
 
 {% block main %}
-<h1>Операция успешна!</h1>
-<p>Вы успешно зарегистрировались или вошли в систему.</p>
-<button onclick="goToUsers()">Перейти к списку пользователей</button>
+<h1>Регистрация успешна!</h1>
+<p>Теперь вы можете войти в свою учетную запись.</p>
+<button onclick="goToWelcome()">Вернуться на главную</button>
 {% endblock %}

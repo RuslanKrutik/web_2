@@ -102,16 +102,19 @@ body {
     margin: 10px 0;
     padding: 15px;
     border-radius: 15px;
-    max-width: 70%;
+    max-width: 70%; /* Максимальная ширина сообщения */
     position: relative;
-    word-wrap: break-word;
+    word-wrap: break-word; /* Перенос длинных слов */
+    overflow-wrap: break-word; /* Альтернативное свойство для переноса */
     font-size: 14px;
     font-weight: bold;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    background-color: #d4edda; /* Задний фон для получателя */
 }
 
 .message-sender {
-    background-color: #cce5ff;
+    background-color: #cce5ff; /* Задний фон для отправителя */
     margin-right: auto;
     color: #004085;
     border: 1px solid #004085;

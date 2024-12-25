@@ -2,6 +2,8 @@ from flask import Blueprint, request, render_template
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 from os import path
+#from werkzeug.security import generate_password_hash
+#print(generate_password_hash("Win20win20")) 
 
 RGZ = Blueprint('RGZ', __name__)
 
@@ -261,3 +263,44 @@ def error_response(rpc_id, code, message):
         },
         'id': rpc_id
     }
+    
+def is_admin(user_id):
+    """
+    Проверяет, является ли пользователь администратором.
+    """
+    conn, cur = db_connect()
+    cur.execute("SELECT username FROM user WHERE id = ?", (user_id,))
+    user = cur.fetchone()
+    db_close(conn, cur)
+    return user and user["username"] == "admin"
+
+def edit_user(params, rpc_id):
+    """
+    Редактирование пользователя (только для администратора).
+    """
+    token = params.get('token')
+    user_id = params.get('user_id')
+    new_username = params.get('username')
+    new_password = params.get('password')
+
+    admin_id = validate_session(token)
+    if not admin_id or not is_admin(admin_id):
+        return error_response(rpc_id, 4, 'Unauthorized.')
+
+    if not user_id or not new_username:
+        return error_response(rpc_id, 1, 'User ID and new username are required.')
+
+    conn, cur = db_connect()
+    cur.execute("SELECT id FROM user WHERE id = ?", (user_id,))
+    if not cur.fetchone():
+        db_close(conn, cur)
+        return error_response(rpc_id, 2, 'User not found.')
+
+    password_hash = generate_password_hash(new_password) if new_password else None
+    if password_hash:
+        cur.execute("UPDATE user SET username = ?, password_hash = ? WHERE id = ?", (new_username, password_hash, user_id))
+    else:
+        cur.execute("UPDATE user SET username = ? WHERE id = ?", (new_username, user_id))
+    db_close(conn, cur)
+
+    return success_response(rpc_id, 'User updated successfully.')

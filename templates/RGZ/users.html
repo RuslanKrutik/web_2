@@ -4,14 +4,12 @@
 
 {% block script %}
 <script>
-// Функция загрузки списка пользователей
 function loadUsers() {
     const url = '/json-rpc-api/';
     const token = sessionStorage.getItem('token');
 
     if (!token) {
         alert('Вы не авторизованы.');
-        window.location.href = '/welcome/';
         return;
     }
 
@@ -34,7 +32,7 @@ function loadUsers() {
         } else {
             const usersList = data.result.users;
             const ul = document.getElementById('user-list');
-            ul.innerHTML = ''; // Очистка списка перед добавлением
+            ul.innerHTML = '';
 
             usersList.forEach(user => {
                 const li = document.createElement('li');
@@ -48,11 +46,89 @@ function loadUsers() {
                 };
 
                 li.appendChild(chatButton);
+
+                // Кнопки редактирования и удаления для администратора
+                if (isAdmin()) {
+                    const editButton = document.createElement('button');
+                    editButton.innerText = 'Редактировать';
+                    editButton.onclick = () => editUser(user.id);
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.innerText = 'Удалить';
+                    deleteButton.onclick = () => deleteUser(user.id);
+
+                    li.appendChild(editButton);
+                    li.appendChild(deleteButton);
+                }
+
                 ul.appendChild(li);
             });
         }
     });
 }
+
+function isAdmin() {
+    return sessionStorage.getItem('isAdmin') === 'true';
+}
+
+function editUser(userId) {
+    const newUsername = prompt('Введите новое имя пользователя:');
+    const newPassword = prompt('Введите новый пароль (оставьте пустым, чтобы не изменять):');
+    const url = '/json-rpc-api/';
+    const token = sessionStorage.getItem('token');
+
+    const json = {
+        'jsonrpc': '2.0',
+        'method': 'edit_user',
+        'params': { 'token': token, 'user_id': userId, 'username': newUsername, 'password': newPassword },
+        'id': Math.round(Math.random() * 1000)
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(json)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(`Ошибка редактирования пользователя: ${data.error.message}`);
+        } else {
+            alert('Пользователь успешно отредактирован.');
+            loadUsers();
+        }
+    });
+}
+
+function deleteUser(userId) {
+    if (!confirm('Вы уверены, что хотите удалить пользователя?')) return;
+
+    const url = '/json-rpc-api/';
+    const token = sessionStorage.getItem('token');
+
+    const json = {
+        'jsonrpc': '2.0',
+        'method': 'delete_user',
+        'params': { 'token': token, 'user_id': userId },
+        'id': Math.round(Math.random() * 1000)
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(json)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(`Ошибка удаления пользователя: ${data.error.message}`);
+        } else {
+            alert('Пользователь успешно удалён.');
+            loadUsers();
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     loadUsers();
 });

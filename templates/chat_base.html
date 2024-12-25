@@ -11,12 +11,13 @@
     <!-- Меню -->
     <div class="menu-container">
         <button class="menu-button" onclick="toggleMenu()">☰</button>
-        <div id="dropdown-menu" class="dropdown-menu">
+        <div id="side-menu" class="side-menu">
             <p>Профиль: <span id="username"></span></p>
             <button onclick="logout()">Выйти</button>
         </div>
     </div>
 
+    <!-- Основной контейнер -->
     <div class="chat-container">
         <!-- Список пользователей -->
         <div class="sidebar">
@@ -43,20 +44,63 @@
 
     <script>
         function toggleMenu() {
-            const menu = document.getElementById('dropdown-menu');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+            const menu = document.getElementById('side-menu');
+            menu.classList.toggle('open');
         }
-
+        
         function logout() {
-            sessionStorage.clear(); // Очищаем сессию
-            window.location.href = '/welcome/'; // Перенаправляем на главную страницу
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const username = sessionStorage.getItem('username'); // Получение имени пользователя
-            if (username) {
-                document.getElementById('username').textContent = username;
+            const url = '/json-rpc-api/';
+            const token = sessionStorage.getItem('token');
+        
+            if (!token) {
+                alert('Вы не авторизованы.');
+                return;
             }
+        
+            const json = {
+                jsonrpc: '2.0',
+                method: 'logout_user',
+                params: { token: token },
+                id: Math.round(Math.random() * 1000)
+            };
+        
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(json)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(`Ошибка выхода: ${data.error.message}`);
+                } else {
+                    sessionStorage.removeItem('token');
+                    window.location.href = '/welcome/';
+                }
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = sessionStorage.getItem('token');
+            const url = '/json-rpc-api/';
+            const json = {
+                jsonrpc: '2.0',
+                method: 'get_user_info',
+                params: { token: token },
+                id: Math.round(Math.random() * 1000)
+            };
+        
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(json)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.result) {
+                    document.getElementById('username').textContent = data.result.username;
+                }
+            });
         });
     </script>
 </body>

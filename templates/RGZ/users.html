@@ -11,6 +11,7 @@ function loadUsers() {
 
     if (!token) {
         alert('Вы не авторизованы.');
+        window.location.href = '/welcome/';
         return;
     }
 
@@ -52,7 +53,6 @@ function loadUsers() {
         }
     });
 }
-
 document.addEventListener('DOMContentLoaded', function() {
     loadUsers();
 });

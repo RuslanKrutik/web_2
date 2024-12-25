@@ -5,6 +5,12 @@
 {% block script %}
 <script>
 function goToUsers() {
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+        alert('Токен не найден. Пожалуйста, авторизуйтесь снова.');
+        window.location.href = '/welcome/';
+        return;
+    }
     window.location.href = '/users/';
 }
 </script>

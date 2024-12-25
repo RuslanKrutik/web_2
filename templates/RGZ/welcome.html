@@ -27,6 +27,7 @@ function registerUser() {
         if (data.error) {
             alert(`Ошибка регистрации: ${data.error.message}`);
         } else {
+            // Сохраняем токен в sessionStorage
             sessionStorage.setItem('token', data.result.token);
             window.location.href = '/confirmation/';
         }

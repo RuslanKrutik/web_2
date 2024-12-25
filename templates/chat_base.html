@@ -8,6 +8,15 @@
     {% block script %}{% endblock %}
 </head>
 <body>
+    <!-- Меню -->
+    <div class="menu-container">
+        <button class="menu-button" onclick="toggleMenu()">☰</button>
+        <div id="dropdown-menu" class="dropdown-menu">
+            <p>Профиль: <span id="username"></span></p>
+            <button onclick="logout()">Выйти</button>
+        </div>
+    </div>
+
     <div class="chat-container">
         <!-- Список пользователей -->
         <div class="sidebar">
@@ -31,5 +40,24 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('dropdown-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function logout() {
+            sessionStorage.clear(); // Очищаем сессию
+            window.location.href = '/welcome/'; // Перенаправляем на главную страницу
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const username = sessionStorage.getItem('username'); // Получение имени пользователя
+            if (username) {
+                document.getElementById('username').textContent = username;
+            }
+        });
+    </script>
 </body>
 </html>

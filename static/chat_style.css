@@ -42,22 +42,27 @@
     padding: 20px;
 }
 
+/* Сообщения */
 .message {
-    max-width: 60%;
-    margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 10px;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 15px;
+    max-width: 70%;
+    position: relative;
+    word-wrap: break-word;
     font-size: 14px;
-    line-height: 1.5;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .message-sender {
-    background: #007bff;
-    color: white;
-    margin-left: auto;
+    background-color: #cce5ff;
+    margin-right: auto;
+    color: #004085;
 }
 
 .message-receiver {
-    background: #ddd;
-    color: black;
+    background-color: #d4edda;
+    margin-left: auto;
+    color: #155724;
 }

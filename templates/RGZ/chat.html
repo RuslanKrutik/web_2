@@ -2,7 +2,27 @@
 
 {% block lab %}Чат{% endblock %}
 
-{% block user_list %}
+{% block chat_window %}
+<div class="chat-container">
+    <!-- Список пользователей -->
+    <div class="sidebar">
+        <h2>Собеседники</h2>
+        <ul id="user-list" class="user-list"></ul>
+    </div>
+
+    <!-- Окно чата -->
+    <div class="chat-window">
+        <div class="chat-header">
+            <h3 id="chat-with">Выберите собеседника</h3>
+        </div>
+        <div id="message-list" class="message-list"></div>
+        <div class="chat-input">
+            <input type="text" id="message-input" placeholder="Введите сообщение" />
+            <button onclick="sendMessage()">Отправить</button>
+        </div>
+    </div>
+</div>
+
 <script>
 function loadUsers() {
     const url = '/json-rpc-api/';
@@ -35,29 +55,20 @@ function loadUsers() {
             userListContainer.innerHTML = '';
 
             usersList.forEach(user => {
-                const userDiv = document.createElement('div');
-                userDiv.classList.add('user-item');
-                userDiv.innerHTML = `
-                    <div class="user-icon">${user.username[0]}</div>
-                    <span>${user.username}</span>
-                `;
-                userDiv.onclick = () => {
+                const li = document.createElement('li');
+                li.innerHTML = `<div class="user-icon">${user.username[0]}</div>${user.username}`;
+                li.onclick = () => {
                     sessionStorage.setItem('chatWith', user.id);
-                    loadMessages(); // Подгружаем сообщения, не обновляя весь экран
+                    sessionStorage.setItem('chatWithName', user.username);
+                    loadMessages();
+                    document.getElementById('chat-with').textContent = user.username;
                 };
-                userListContainer.appendChild(userDiv);
+                userListContainer.appendChild(li);
             });
         }
     });
 }
 
-document.addEventListener('DOMContentLoaded', loadUsers);
-</script>
-<div id="user-list"></div>
-{% endblock %}
-
-{% block message_list %}
-<script>
 function loadMessages() {
     const url = '/json-rpc-api/';
     const token = sessionStorage.getItem('token');
@@ -90,15 +101,15 @@ function loadMessages() {
             messageList.innerHTML = '';
 
             messages.forEach(message => {
-                const messageDiv = document.createElement('div');
-                messageDiv.classList.add('message');
+                const div = document.createElement('div');
+                div.classList.add('message');
                 if (message.sender_id === parseInt(sessionStorage.getItem('chatWith'))) {
-                    messageDiv.classList.add('message-sender');
+                    div.classList.add('message-sender');
                 } else {
-                    messageDiv.classList.add('message-receiver');
+                    div.classList.add('message-receiver');
                 }
-                messageDiv.innerText = message.text;
-                messageList.appendChild(messageDiv);
+                div.innerText = message.text;
+                messageList.appendChild(div);
             });
         }
     });
@@ -138,11 +149,13 @@ function sendMessage() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', loadMessages);
+document.addEventListener('DOMContentLoaded', () => {
+    loadUsers();
+    const chatWithName = sessionStorage.getItem('chatWithName');
+    if (chatWithName) {
+        document.getElementById('chat-with').textContent = chatWithName;
+        loadMessages();
+    }
+});
 </script>
-<div id="message-list"></div>
-<div class="message-input-container">
-    <input type="text" id="message-input" placeholder="Введите сообщение" />
-    <button onclick="sendMessage()">Отправить</button>
-</div>
 {% endblock %}

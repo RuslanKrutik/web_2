@@ -161,6 +161,9 @@ body {
     font-size: 24px;
     cursor: pointer;
     color: #4CAF50;
+    background: none;
+    border: none;
+    z-index: 1100;
 }
 
 /* Шторка меню */
@@ -181,6 +184,7 @@ body {
     right: 0;
 }
 
+/* Заголовок меню */
 .menu-header {
     display: flex;
     justify-content: space-between;
@@ -188,9 +192,6 @@ body {
     padding: 10px;
     background-color: #4CAF50;
     color: white;
-}
-
-.menu-header span {
     font-size: 18px;
     font-weight: bold;
 }
@@ -203,80 +204,9 @@ body {
     cursor: pointer;
 }
 
+/* Содержимое меню */
 .menu-content {
-    padding: 10px;
-    text-align: center;
-}
-
-#user-info {
-    font-size: 16px;
-    margin-bottom: 20px;
-}
-
-.logout-button {
-    padding: 10px 20px;
-    border: none;
-    background-color: #4CAF50;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.logout-button:hover {
-    background-color: #45a049;
-}/* Кнопка для открытия меню */
-.menu-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 24px;
-    cursor: pointer;
-    color: #4CAF50;
-}
-
-/* Шторка меню */
-.side-menu {
-    position: fixed;
-    top: 0;
-    right: -250px;
-    width: 250px;
-    height: 100%;
-    background-color: #f0f4f7;
-    box-shadow: -4px 0 10px rgba(0, 0, 0, 0.2);
-    overflow-y: auto;
-    transition: right 0.3s ease;
-    z-index: 1000;
-}
-
-.side-menu.open {
-    right: 0;
-}
-
-.menu-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-}
-
-.menu-header span {
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.close-menu {
-    background: none;
-    border: none;
-    font-size: 24px;
-    color: white;
-    cursor: pointer;
-}
-
-.menu-content {
-    padding: 10px;
+    padding: 20px;
     text-align: center;
 }
 

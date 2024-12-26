@@ -1,107 +1,189 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block lab %}Мессенджер{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='chat_style.css') }}">
-    {% block script %}{% endblock %}
-</head>
-<body>
-    <!-- Меню -->
-    <div class="menu-container">
-        <button class="menu-button" onclick="toggleMenu()">☰</button>
-        <div id="side-menu" class="side-menu">
-            <p>Профиль: <span id="username"></span></p>
-            <button onclick="logout()">Выйти</button>
-        </div>
-    </div>
+\{% extends "chat_base.html" %}
 
-    <!-- Основной контейнер -->
-    <div class="chat-container">
-        <!-- Список пользователей -->
-        <div class="sidebar">
-            <h2>Список чатов</h2>
-            <ul id="user-list" class="user-list">
-                {% block user_list %}{% endblock %}
-            </ul>
-        </div>
+{% block lab %}Чат{% endblock %}
 
-        <!-- Окно чата -->
-        <div class="chat-window">
-            <div class="chat-header">
-                <h2 id="chat-title">Чат</h2>
-            </div>
-            <div id="message-list" class="message-list">
-                {% block message_list %}{% endblock %}
-            </div>
-            <div class="chat-input">
-                <input type="text" id="message-input" placeholder="Введите сообщение">
-                <button onclick="sendMessage()">Отправить</button>
-            </div>
-        </div>
-    </div>
+{% block user_list %}
+<script>
+function loadUsers() {
+    const url = '/json-rpc-api/';
+    const token = sessionStorage.getItem('token');
 
-    <script>
-        function toggleMenu() {
-            const menu = document.getElementById('side-menu');
-            menu.classList.toggle('open');
+    if (!token) {
+        alert('Вы не авторизованы.');
+        return;
+    }
+
+    const json = {
+        'jsonrpc': '2.0',
+        'method': 'get_users',
+        'params': { 'token': token },
+        'id': Math.round(Math.random() * 1000)
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(json)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(`Ошибка загрузки пользователей: ${data.error.message}`);
+        } else {
+            const usersList = data.result.users;
+            const userListContainer = document.getElementById('user-list');
+            userListContainer.innerHTML = '';
+
+            usersList.forEach(user => {
+                const li = document.createElement('li');
+                li.innerHTML = `<div class="user-icon">${user.username[0]}</div>${user.username}`;
+                li.onclick = () => {
+                    sessionStorage.setItem('chatWith', user.id);
+                    sessionStorage.setItem('chatWithName', user.username);
+                    document.getElementById('chat-title').textContent = user.username;
+                    loadMessages();
+                };
+                userListContainer.appendChild(li);
+            });
         }
-        
-        function logout() {
-            const url = '/json-rpc-api/';
-            const token = sessionStorage.getItem('token');
-        
-            if (!token) {
-                alert('Вы не авторизованы.');
-                return;
-            }
-        
-            const json = {
-                jsonrpc: '2.0',
-                method: 'logout_user',
-                params: { token: token },
-                id: Math.round(Math.random() * 1000)
-            };
-        
-            fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(json)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    alert(`Ошибка выхода: ${data.error.message}`);
+    });
+}
+</script>
+{% endblock %}
+
+{% block message_list %}
+<script>
+function loadMessages() {
+    const url = '/json-rpc-api/';
+    const token = sessionStorage.getItem('token');
+    const chatWith = sessionStorage.getItem('chatWith');
+
+    if (!token || !chatWith) {
+        alert('Ошибка авторизации или ID чата.');
+        return;
+    }
+
+    const json = {
+        'jsonrpc': '2.0',
+        'method': 'get_messages',
+        'params': { 'token': token, 'chat_with': parseInt(chatWith) },
+        'id': Math.round(Math.random() * 1000)
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(json)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(`Ошибка загрузки сообщений: ${data.error.message}`);
+        } else {
+            const messages = data.result.messages;
+            const messageList = document.getElementById('message-list');
+            messageList.innerHTML = '';
+
+            messages.forEach(message => {
+                const div = document.createElement('div');
+                div.classList.add('message');
+                if (message.sender_id === parseInt(chatWith)) {
+                    div.classList.add('message-sender');
                 } else {
-                    sessionStorage.removeItem('token');
-                    window.location.href = '/welcome/';
+                    div.classList.add('message-receiver');
                 }
+
+                const text = document.createElement('span');
+                text.innerText = message.text;
+                div.appendChild(text);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.innerText = 'Удалить';
+                deleteButton.onclick = () => deleteMessage(message.id);
+                div.appendChild(deleteButton);
+
+                messageList.appendChild(div);
             });
         }
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            const token = sessionStorage.getItem('token');
-            const url = '/json-rpc-api/';
-            const json = {
-                jsonrpc: '2.0',
-                method: 'get_user_info',
-                params: { token: token },
-                id: Math.round(Math.random() * 1000)
-            };
-        
-            fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(json)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.result) {
-                    document.getElementById('username').textContent = data.result.username;
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+    });
+}
+
+function deleteMessage(messageId) {
+    const url = '/json-rpc-api/';
+    const token = sessionStorage.getItem('token');
+
+    const json = {
+        'jsonrpc': '2.0',
+        'method': 'delete_message',
+        'params': { 'token': token, 'message_id': messageId },
+        'id': Math.round(Math.random() * 1000)
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(json)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(`Ошибка удаления сообщения: ${data.error.message}`);
+        } else {
+            loadMessages();
+        }
+    });
+}
+
+function sendMessage() {
+    const url = '/json-rpc-api/';
+    const token = sessionStorage.getItem('token');
+    const chatWith = sessionStorage.getItem('chatWith');
+    const message = document.getElementById('message-input').value;
+
+    if (!token || !chatWith || !message) {
+        alert('Ошибка: проверьте авторизацию, ID чата или текст сообщения.');
+        return;
+    }
+
+    const json = {
+        'jsonrpc': '2.0',
+        'method': 'send_message',
+        'params': { 'token': token, 'receiver_id': parseInt(chatWith), 'text': message },
+        'id': Math.round(Math.random() * 1000)
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(json)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(`Ошибка отправки сообщения: ${data.error.message}`);
+        } else {
+            document.getElementById('message-input').value = '';
+            loadMessages();
+        }
+    });
+}
+</script>
+{% endblock %}
+
+{% block script %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    loadUsers();
+    const chatWithName = sessionStorage.getItem('chatWithName');
+    if (chatWithName) {
+        document.getElementById('chat-title').textContent = chatWithName;
+        loadMessages();
+    }
+});
+</script>
+{% endblock %}
+
+<div class="chat-input">
+    <input type="text" id="message-input" placeholder="Введите сообщение">
+    <button onclick="sendMessage()">Отправить</button>
+</div>

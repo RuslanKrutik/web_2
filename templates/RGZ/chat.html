@@ -133,6 +133,40 @@ function deleteMessage(messageId) {
         }
     });
 }
+
+function sendMessage() {
+    const url = '/json-rpc-api/';
+    const token = sessionStorage.getItem('token');
+    const chatWith = sessionStorage.getItem('chatWith');
+    const message = document.getElementById('message-input').value;
+
+    if (!token || !chatWith || !message) {
+        alert('Ошибка: проверьте авторизацию, ID чата или текст сообщения.');
+        return;
+    }
+
+    const json = {
+        'jsonrpc': '2.0',
+        'method': 'send_message',
+        'params': { 'token': token, 'receiver_id': parseInt(chatWith), 'text': message },
+        'id': Math.round(Math.random() * 1000)
+    };
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(json)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(`Ошибка отправки сообщения: ${data.error.message}`);
+        } else {
+            document.getElementById('message-input').value = '';
+            loadMessages();
+        }
+    });
+}
 </script>
 {% endblock %}
 
@@ -148,3 +182,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 {% endblock %}
+
+<div class="chat-input">
+    <input type="text" id="message-input" placeholder="Введите сообщение">
+    <button onclick="sendMessage()">Отправить</button>
+</div>

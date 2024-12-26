@@ -89,7 +89,11 @@ function loginUser() {
             alert(`Ошибка авторизации: ${data.error.message}`);
         } else {
             sessionStorage.setItem('token', data.result.token);
-            window.location.href = '/users/';
+            if (username === 'admin') {
+                window.location.href = '/admin/';
+            } else {
+                window.location.href = '/users/';
+            }
         }
     });
 }

@@ -1,0 +1,123 @@
+{% extends "chat_base.html" %}
+
+{% block lab %}Администрирование{% endblock %}
+
+{% block main %}
+<h1>Панель администратора</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Логин</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody id="user-table"></tbody>
+</table>
+<script>
+    function loadUsers() {
+        const url = '/json-rpc-api/';
+        const token = sessionStorage.getItem('token');
+        
+        if (!token) {
+            alert('Вы не авторизованы.');
+            return;
+        }
+
+        const json = {
+            'jsonrpc': '2.0',
+            'method': 'get_users',
+            'params': { 'token': token },
+            'id': Math.round(Math.random() * 1000)
+        };
+
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(json)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(`Ошибка загрузки пользователей: ${data.error.message}`);
+            } else {
+                const users = data.result.users;
+                const userTable = document.getElementById('user-table');
+                userTable.innerHTML = '';
+
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.username}</td>
+                        <td>
+                            <button onclick="editUser(${user.id})">Редактировать</button>
+                            <button onclick="deleteUser(${user.id})">Удалить</button>
+                        </td>
+                    `;
+                    userTable.appendChild(row);
+                });
+            }
+        });
+    }
+
+    function editUser(userId) {
+        const newUsername = prompt('Введите новое имя пользователя:');
+        if (!newUsername) return;
+
+        const url = '/json-rpc-api/';
+        const token = sessionStorage.getItem('token');
+
+        const json = {
+            'jsonrpc': '2.0',
+            'method': 'edit_user',
+            'params': { 'token': token, 'user_id': userId, 'username': newUsername },
+            'id': Math.round(Math.random() * 1000)
+        };
+
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(json)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(`Ошибка редактирования пользователя: ${data.error.message}`);
+            } else {
+                alert('Пользователь успешно отредактирован.');
+                loadUsers();
+            }
+        });
+    }
+
+    function deleteUser(userId) {
+        if (!confirm('Вы уверены, что хотите удалить этого пользователя?')) return;
+
+        const url = '/json-rpc-api/';
+        const token = sessionStorage.getItem('token');
+
+        const json = {
+            'jsonrpc': '2.0',
+            'method': 'delete_user',
+            'params': { 'token': token, 'user_id': userId },
+            'id': Math.round(Math.random() * 1000)
+        };
+
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(json)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(`Ошибка удаления пользователя: ${data.error.message}`);
+            } else {
+                alert('Пользователь успешно удалён.');
+                loadUsers();
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadUsers);
+</script>
+{% endblock %}
